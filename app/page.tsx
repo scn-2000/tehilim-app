@@ -1,65 +1,77 @@
-import Image from "next/image";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Logo from './components/Logo';
+
+function getSet(key: string): number[] {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+}
 
 export default function Home() {
+  const router = useRouter();
+  const [bookmarks, setBookmarks] = useState<number[]>([]);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    setBookmarks(getSet('bookmarks'));
+    try { setDarkMode(JSON.parse(localStorage.getItem('pref_darkmode') || 'false')); } catch {}
+  }, []);
+
+  const bg = darkMode ? '#1a1008' : '#fdf6ec';
+  const surface = darkMode ? '#2c1e0f' : '#fff8ee';
+  const border = darkMode ? '#5c3d1e' : '#e8d5b5';
+  const textPrimary = darkMode ? '#f5e9d4' : '#2c1810';
+  const textMuted = darkMode ? '#c9a96e' : '#9a7a5a';
+  const goldAccent = '#c9a96e';
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>
+
+      {/* Header */}
+      <div style={{ textAlign: 'center', padding: '60px 24px 40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+          <Logo size={72} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1 style={{ fontSize: '40px', fontWeight: '300', marginBottom: '8px' }}>TehilimForAll</h1>
+        <p style={{ fontSize: '14px', color: textMuted, marginBottom: '4px' }}>תהילים לכולם</p>
+        <p style={{ fontSize: '18px', color: textMuted, marginBottom: '32px' }}>The Book of Psalms — for everyone</p>
+        <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '0 auto' }} />
+      </div>
+
+      {/* Continue from bookmark */}
+      {bookmarks.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+          <button onClick={() => router.push(`/psalm/${bookmarks[bookmarks.length - 1]}`)}
+            style={{ background: 'none', border: `1px solid ${goldAccent}`, borderRadius: '20px', padding: '8px 20px', cursor: 'pointer', fontSize: '14px', color: goldAccent, fontFamily: 'inherit' }}>
+            🔖 Go to last bookmark — Psalm {bookmarks[bookmarks.length - 1]}
+          </button>
         </div>
-      </main>
+      )}
+
+      {/* Psalm grid */}
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 80px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '8px' }}>
+          {Array.from({ length: 150 }, (_, i) => i + 1).map(num => {
+            const isBookmarked = bookmarks.includes(num);
+            return (
+              <button key={num} onClick={() => router.push(`/psalm/${num}`)}
+                style={{
+                  padding: '10px 4px', cursor: 'pointer', borderRadius: '8px',
+                  fontSize: '14px', fontFamily: 'inherit',
+                  border: isBookmarked ? `2px solid ${goldAccent}` : `1px solid ${border}`,
+                  background: isBookmarked ? (darkMode ? '#3a2a10' : '#fdf0d5') : surface,
+                  color: textPrimary, position: 'relative' as const,
+                }}>
+                {num}
+                {isBookmarked && (
+                  <span style={{ position: 'absolute', top: '2px', right: '3px', fontSize: '8px' }}>🔖</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
