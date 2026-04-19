@@ -93,17 +93,22 @@ function translitSephardic(text: string): string {
 }
 
 function usePersistentState<T>(key: string, defaultValue: T) {
-  const [state, setState] = useState<T>(() => {
-    if (typeof window === 'undefined') return defaultValue;
+  const [state, setState] = useState<T>(defaultValue);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
     try {
       const stored = localStorage.getItem(key);
-      return stored !== null ? JSON.parse(stored) : defaultValue;
-    } catch { return defaultValue; }
-  });
+      if (stored !== null) setState(JSON.parse(stored));
+    } catch {}
+  }, [key]);
+
   const setPersistentState = (value: T) => {
     setState(value);
     try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
   };
+
   return [state, setPersistentState] as const;
 }
 
