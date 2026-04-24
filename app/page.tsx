@@ -56,7 +56,7 @@ export default function Home() {
 
       {/* Psalm grid */}
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 12px 60px' : '0 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMobile ? 6 : 10}, 1fr)`, gap: isMobile ? '6px' : '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMobile ? 5 : 10}, 1fr)`, gap: isMobile ? '6px' : '8px' }}>
           {Array.from({ length: 150 }, (_, i) => i + 1).map(num => {
             const isBookmarked = bookmarks.includes(num);
             return (
