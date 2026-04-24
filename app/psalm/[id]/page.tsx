@@ -94,10 +94,8 @@ function translitSephardic(text: string): string {
 
 function usePersistentState<T>(key: string, defaultValue: T) {
   const [state, setState] = useState<T>(defaultValue);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     try {
       const stored = localStorage.getItem(key);
       if (stored !== null) setState(JSON.parse(stored));
@@ -135,9 +133,11 @@ export default function PsalmPage() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [psalmDropdownOpen, setPsalmDropdownOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
   const psalmNum = Number(id);
 
   const fontSizeMap: Record<string, { hebrew: string; english: string }> = {
@@ -168,6 +168,7 @@ export default function PsalmPage() {
     function handleClick(e: MouseEvent) {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setSettingsOpen(false);
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setPsalmDropdownOpen(false);
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) setShareOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -178,6 +179,30 @@ export default function PsalmPage() {
     const updated = arr.includes(psalmNum) ? arr.filter(n => n !== psalmNum) : [...arr, psalmNum];
     saveSet('bookmarks', updated);
     setIsBookmarked(!isBookmarked);
+  }
+
+  function handleShare(type: 'link' | 'text') {
+    const url = `https://tehilim-app.vercel.app/psalm/${psalmNum}`;
+    const psalmText = hebrew.map((verse, i) =>
+      `${i + 1}. ${stripHtml(verse)}\n${english[i] || ''}`
+    ).join('\n\n');
+
+    if (type === 'link') {
+      if (navigator.share) {
+        navigator.share({ title: `Psalm ${psalmNum} — TehilimForAll`, url });
+      } else {
+        navigator.clipboard.writeText(url);
+        alert('Link copied to clipboard!');
+      }
+    } else {
+      const text = `Psalm ${psalmNum}\n\n${psalmText}\n\n${url}`;
+      if (navigator.share) {
+        navigator.share({ title: `Psalm ${psalmNum} — TehilimForAll`, text, url });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert('Psalm text copied to clipboard!');
+      }
+    }
   }
 
   const bg = darkMode ? '#1a1008' : '#fdf6ec';
@@ -214,7 +239,7 @@ export default function PsalmPage() {
       {/* Top bar */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '10px 12px' : '12px 24px' }}>
 
-        {/* Row 1: Logo + All Psalms | Bookmark + Settings */}
+        {/* Row 1: Logo + All Psalms | Bookmark + Share + Settings */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '8px' : '0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Logo size={28} />
@@ -225,6 +250,8 @@ export default function PsalmPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+
+            {/* Bookmark */}
             <button onClick={toggleBookmark} style={iconBtn(isBookmarked, goldAccent)}>
               <span style={{ fontSize: '15px' }}>🔖</span>
               {!isMobile && (
@@ -234,6 +261,27 @@ export default function PsalmPage() {
               )}
             </button>
 
+            {/* Share */}
+            <div ref={shareRef} style={{ position: 'relative' }}>
+              <button onClick={() => setShareOpen(!shareOpen)}
+                style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 10px', cursor: 'pointer', fontSize: '16px' }}>
+                🔗
+              </button>
+              {shareOpen && (
+                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '200px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
+                  <button onClick={() => { handleShare('link'); setShareOpen(false); }}
+                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px' }}>
+                    🔗 Share link
+                  </button>
+                  <button onClick={() => { handleShare('text'); setShareOpen(false); }}
+                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px' }}>
+                    📋 Share with text
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Settings */}
             <div ref={settingsRef} style={{ position: 'relative' }}>
               <button onClick={() => setSettingsOpen(!settingsOpen)}
                 style={{ background: settingsOpen ? surface : 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 10px', cursor: 'pointer', fontSize: '16px' }}>
@@ -276,7 +324,7 @@ export default function PsalmPage() {
           </div>
         </div>
 
-        {/* Row 2 (always visible): Prev | Psalm dropdown | Next */}
+        {/* Row 2: Prev | Psalm dropdown | Next */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
           <button onClick={() => router.push(`/psalm/${psalmNum - 1}`)} disabled={psalmNum <= 1}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum <= 1 ? 'default' : 'pointer', color: psalmNum <= 1 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum <= 1 ? 0.4 : 1 }}>
@@ -288,7 +336,6 @@ export default function PsalmPage() {
               style={{ background: surface, border: `1px solid ${goldAccent}`, borderRadius: '8px', padding: '8px 20px', cursor: 'pointer', color: textPrimary, fontSize: '15px', fontFamily: 'inherit', fontWeight: '500', minWidth: isMobile ? '160px' : '180px', textAlign: 'center' }}>
               Psalm {psalmNum} ▾
             </button>
-
             {psalmDropdownOpen && (
               <div style={{ position: 'absolute', top: '44px', left: '50%', transform: 'translateX(-50%)', background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: isMobile ? '280px' : '300px', maxHeight: '320px', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px' }}>
