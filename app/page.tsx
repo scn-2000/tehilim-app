@@ -12,10 +12,15 @@ export default function Home() {
   const router = useRouter();
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [darkMode, setDarkMode] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setBookmarks(getSet('bookmarks'));
     try { setDarkMode(JSON.parse(localStorage.getItem('pref_darkmode') || 'false')); } catch {}
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
   const bg = darkMode ? '#1a1008' : '#fdf6ec';
@@ -29,36 +34,38 @@ export default function Home() {
     <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>
 
       {/* Header */}
-      <div style={{ textAlign: 'center', padding: '60px 24px 40px' }}>
+      <div style={{ textAlign: 'center', padding: isMobile ? '40px 16px 32px' : '60px 24px 40px' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-          <Logo size={72} />
+          <Logo size={isMobile ? 56 : 72} />
         </div>
-        <h1 style={{ fontSize: '40px', fontWeight: '300', marginBottom: '8px' }}>TehilimForAll</h1>
+        <h1 style={{ fontSize: isMobile ? '32px' : '40px', fontWeight: '300', marginBottom: '8px' }}>TehilimForAll</h1>
         <p style={{ fontSize: '14px', color: textMuted, marginBottom: '4px' }}>תהילים לכולם</p>
-        <p style={{ fontSize: '18px', color: textMuted, marginBottom: '32px' }}>The Book of Psalms — for everyone</p>
+        <p style={{ fontSize: isMobile ? '15px' : '18px', color: textMuted, marginBottom: '32px' }}>The Book of Psalms — for everyone</p>
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '0 auto' }} />
       </div>
 
       {/* Continue from bookmark */}
       {bookmarks.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px', padding: '0 16px' }}>
           <button onClick={() => router.push(`/psalm/${bookmarks[bookmarks.length - 1]}`)}
-            style={{ background: 'none', border: `1px solid ${goldAccent}`, borderRadius: '20px', padding: '8px 20px', cursor: 'pointer', fontSize: '14px', color: goldAccent, fontFamily: 'inherit' }}>
+            style={{ background: 'none', border: `1px solid ${goldAccent}`, borderRadius: '20px', padding: '10px 20px', cursor: 'pointer', fontSize: '14px', color: goldAccent, fontFamily: 'inherit' }}>
             🔖 Go to last bookmark — Psalm {bookmarks[bookmarks.length - 1]}
           </button>
         </div>
       )}
 
       {/* Psalm grid */}
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '8px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 12px 60px' : '0 24px 80px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMobile ? 6 : 10}, 1fr)`, gap: isMobile ? '6px' : '8px' }}>
           {Array.from({ length: 150 }, (_, i) => i + 1).map(num => {
             const isBookmarked = bookmarks.includes(num);
             return (
               <button key={num} onClick={() => router.push(`/psalm/${num}`)}
                 style={{
-                  padding: '10px 4px', cursor: 'pointer', borderRadius: '8px',
-                  fontSize: '14px', fontFamily: 'inherit',
+                  padding: isMobile ? '14px 4px' : '10px 4px',
+                  cursor: 'pointer', borderRadius: '8px',
+                  fontSize: isMobile ? '15px' : '14px',
+                  fontFamily: 'inherit',
                   border: isBookmarked ? `2px solid ${goldAccent}` : `1px solid ${border}`,
                   background: isBookmarked ? (darkMode ? '#3a2a10' : '#fdf0d5') : surface,
                   color: textPrimary, position: 'relative' as const,
