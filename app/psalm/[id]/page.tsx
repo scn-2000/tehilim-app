@@ -457,7 +457,7 @@ export default function PsalmPage() {
                 <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Collective Reading</p>
               </div>
               <p style={{ fontSize: '13px', color: textMuted, marginBottom: '16px', lineHeight: '1.6' }}>
-                Join others in reading all 150 psalms together — for healing, in memory, or for a shared intention.
+                Join others in reading all 150 psalms together.
               </p>
               <button onClick={() => { router.push('/collective/new'); setSidebarOpen(false); }}
                 style={{ width: '100%', padding: '12px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', marginBottom: '10px' }}>

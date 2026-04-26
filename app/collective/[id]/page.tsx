@@ -192,6 +192,9 @@ export default function CollectiveReadingPage() {
             <span style={{ fontSize: '13px', color: textMuted }}>Reading as <strong style={{ color: textPrimary }}>{savedName}</strong></span>
           )}
           <button onClick={handleShare}
+  style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '6px' }}>
+  ✈ Share link to invite others
+</button>
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 12px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
             Share
           </button>
