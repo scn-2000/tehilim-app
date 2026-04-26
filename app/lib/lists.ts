@@ -1,6 +1,7 @@
 export interface PsalmList {
   id: string;
   name: string;
+  description: string;
   psalms: number[];
   createdAt: number;
 }
@@ -13,10 +14,11 @@ export function saveLists(lists: PsalmList[]) {
   try { localStorage.setItem('psalm_lists', JSON.stringify(lists)); } catch {}
 }
 
-export function createList(name: string): PsalmList {
+export function createList(name: string, description: string): PsalmList {
   const list: PsalmList = {
     id: Math.random().toString(36).slice(2, 10),
     name,
+    description,
     psalms: [],
     createdAt: Date.now(),
   };
@@ -49,10 +51,10 @@ export function removePsalmFromList(listId: string, psalmNum: number) {
 }
 
 export function encodeListForSharing(list: PsalmList): string {
-  const data = { name: list.name, psalms: list.psalms };
+  const data = { name: list.name, description: list.description, psalms: list.psalms };
   return btoa(encodeURIComponent(JSON.stringify(data)));
 }
 
-export function decodeSharedList(encoded: string): { name: string; psalms: number[] } | null {
+export function decodeSharedList(encoded: string): { name: string; description: string; psalms: number[] } | null {
   try { return JSON.parse(decodeURIComponent(atob(encoded))); } catch { return null; }
 }

@@ -125,10 +125,10 @@ const IconBookmark = ({ filled }: { filled: boolean }) => (
     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
   </svg>
 );
-const IconShare = () => (
+const IconPaperPlane = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+    <line x1="22" y1="2" x2="11" y2="13"/>
+    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
   </svg>
 );
 const IconSettings = () => (
@@ -154,6 +154,16 @@ const IconCopy = () => (
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
   </svg>
 );
+const IconPlus = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+const IconCheck = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
 
 export default function PsalmPage() {
   const { id } = useParams();
@@ -173,15 +183,18 @@ export default function PsalmPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [psalmDropdownOpen, setPsalmDropdownOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [saveOpen, setSaveOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists'>('bookmarks');
   const [lists, setLists] = useState<PsalmList[]>([]);
   const [creatingList, setCreatingList] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [newListDesc, setNewListDesc] = useState('');
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
+  const saveRef = useRef<HTMLDivElement>(null);
   const psalmNum = Number(id);
 
   const fontSizeMap: Record<string, { hebrew: string; english: string }> = {
@@ -216,6 +229,7 @@ export default function PsalmPage() {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setSettingsOpen(false);
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setPsalmDropdownOpen(false);
       if (shareRef.current && !shareRef.current.contains(e.target as Node)) setShareOpen(false);
+      if (saveRef.current && !saveRef.current.contains(e.target as Node)) { setSaveOpen(false); setCreatingList(false); }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -231,9 +245,10 @@ export default function PsalmPage() {
 
   function handleCreateList() {
     if (!newListName.trim()) return;
-    createList(newListName.trim());
+    createList(newListName.trim(), newListDesc.trim());
     setLists(getLists());
     setNewListName('');
+    setNewListDesc('');
     setCreatingList(false);
   }
 
@@ -242,13 +257,14 @@ export default function PsalmPage() {
     setLists(getLists());
   }
 
-  function handleAddToList(listId: string) {
-    addPsalmToList(listId, psalmNum);
-    setLists(getLists());
-  }
-
-  function handleRemoveFromList(listId: string) {
-    removePsalmFromList(listId, psalmNum);
+  function handleToggleInList(listId: string) {
+    const list = lists.find(l => l.id === listId);
+    if (!list) return;
+    if (list.psalms.includes(psalmNum)) {
+      removePsalmFromList(listId, psalmNum);
+    } else {
+      addPsalmToList(listId, psalmNum);
+    }
     setLists(getLists());
   }
 
@@ -373,8 +389,8 @@ export default function PsalmPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>My Lists</p>
                 <button onClick={() => setCreatingList(true)}
-                  style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit' }}>
-                  + New List
+                  style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <IconPlus /> New List
                 </button>
               </div>
 
@@ -384,12 +400,15 @@ export default function PsalmPage() {
                   <input value={newListName} onChange={e => setNewListName(e.target.value)}
                     placeholder="List name..." onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none' }} />
+                  <textarea value={newListDesc} onChange={e => setNewListDesc(e.target.value)}
+                    placeholder="Description (optional)..." rows={2}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none', resize: 'none' }} />
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button onClick={handleCreateList}
                       style={{ flex: 1, padding: '7px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
                       Create
                     </button>
-                    <button onClick={() => { setCreatingList(false); setNewListName(''); }}
+                    <button onClick={() => { setCreatingList(false); setNewListName(''); setNewListDesc(''); }}
                       style={{ flex: 1, padding: '7px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
                       Cancel
                     </button>
@@ -403,34 +422,28 @@ export default function PsalmPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {lists.map(list => (
                     <div key={list.id} style={{ border: `1px solid ${border}`, borderRadius: '10px', overflow: 'hidden' }}>
-                      <div style={{ padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <button onClick={() => { router.push(`/list/${list.id}`); setSidebarOpen(false); }}
+                        style={{ width: '100%', padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                         <div>
-                          <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px' }}>{list.name}</p>
-                          <p style={{ fontSize: '12px', color: textMuted }}>{list.psalms.length} psalm{list.psalms.length !== 1 ? 's' : ''}</p>
+                          <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px', fontFamily: 'inherit' }}>{list.name}</p>
+                          {list.description && <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic', marginBottom: '2px', fontFamily: 'inherit' }}>{list.description}</p>}
+                          <p style={{ fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>{list.psalms.length} psalm{list.psalms.length !== 1 ? 's' : ''}</p>
                         </div>
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <button onClick={() => handleShareList(list)} title="Share list"
-                            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '6px', padding: '5px 7px', cursor: 'pointer', color: textMuted }}>
-                            <IconShare />
-                          </button>
-                          <button onClick={() => handleDeleteList(list.id)} title="Delete list"
-                            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '6px', padding: '5px 7px', cursor: 'pointer', color: textMuted }}>
-                            <IconClose />
-                          </button>
-                        </div>
-                      </div>
-                      <div style={{ borderTop: `1px solid ${border}`, padding: '8px 14px', background: darkMode ? '#2a1a0a' : '#faf4ea' }}>
-                        {list.psalms.includes(psalmNum) ? (
-                          <button onClick={() => handleRemoveFromList(list.id)}
-                            style={{ width: '100%', padding: '6px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
-                            ✓ Psalm {psalmNum} added — remove
-                          </button>
-                        ) : (
-                          <button onClick={() => handleAddToList(list.id)}
-                            style={{ width: '100%', padding: '6px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit' }}>
-                            + Add Psalm {psalmNum} to list
-                          </button>
-                        )}
+                        <span style={{ color: textMuted, fontSize: '16px' }}>›</span>
+                      </button>
+                      <div style={{ borderTop: `1px solid ${border}`, padding: '8px 14px', background: darkMode ? '#2a1a0a' : '#faf4ea', display: 'flex', gap: '6px' }}>
+                        <button onClick={() => handleToggleInList(list.id)}
+                          style={{ flex: 1, padding: '6px', background: list.psalms.includes(psalmNum) ? 'none' : goldAccent, border: `1px solid ${list.psalms.includes(psalmNum) ? border : goldAccent}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: list.psalms.includes(psalmNum) ? textMuted : 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                          {list.psalms.includes(psalmNum) ? <><IconCheck /> Remove</> : <><IconPlus /> Add Psalm {psalmNum}</>}
+                        </button>
+                        <button onClick={() => handleShareList(list)}
+                          style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
+                          <IconPaperPlane />
+                        </button>
+                        <button onClick={() => handleDeleteList(list.id)}
+                          style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
+                          <IconClose />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -465,13 +478,50 @@ export default function PsalmPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <button onClick={toggleBookmark} style={hdrBtn(isBookmarked, goldAccent)} title="Bookmark">
-              <IconBookmark filled={isBookmarked} />
-            </button>
 
+            {/* Save/Bookmark dropdown */}
+            <div ref={saveRef} style={{ position: 'relative' }}>
+              <button onClick={() => setSaveOpen(!saveOpen)} style={hdrBtn(isBookmarked, goldAccent)} title="Save">
+                <IconBookmark filled={isBookmarked} />
+              </button>
+              {saveOpen && (
+                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '240px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
+                  <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 10px 8px' }}>Save to</p>
+
+                  {/* Bookmarks */}
+                  <button onClick={() => { toggleBookmark(); setSaveOpen(false); }}
+                    style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <IconBookmark filled={isBookmarked} />
+                      <span>Bookmarks</span>
+                    </div>
+                    {isBookmarked && <span style={{ color: goldAccent }}><IconCheck /></span>}
+                  </button>
+
+                  {lists.length > 0 && <div style={{ height: '1px', background: border, margin: '4px 8px' }} />}
+
+                  {/* Lists */}
+                  {lists.map(list => (
+                    <button key={list.id} onClick={() => handleToggleInList(list.id)}
+                      style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>{list.name}</span>
+                      {list.psalms.includes(psalmNum) && <span style={{ color: goldAccent }}><IconCheck /></span>}
+                    </button>
+                  ))}
+
+                  <div style={{ height: '1px', background: border, margin: '4px 8px' }} />
+                  <button onClick={() => { setSidebarOpen(true); setSidebarTab('lists'); setCreatingList(true); setSaveOpen(false); }}
+                    style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: goldAccent, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <IconPlus /> New list
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Share */}
             <div ref={shareRef} style={{ position: 'relative' }}>
               <button onClick={() => setShareOpen(!shareOpen)} style={hdrBtn()} title="Share">
-                <IconShare />
+                <IconPaperPlane />
               </button>
               {shareOpen && (
                 <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '190px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
@@ -487,6 +537,7 @@ export default function PsalmPage() {
               )}
             </div>
 
+            {/* Settings */}
             <div ref={settingsRef} style={{ position: 'relative' }}>
               <button onClick={() => setSettingsOpen(!settingsOpen)} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')} title="Settings">
                 <IconSettings />
@@ -528,12 +579,12 @@ export default function PsalmPage() {
           </div>
         </div>
 
+        {/* Row 2: Prev | Psalm dropdown | Next */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
           <button onClick={() => router.push(`/psalm/${psalmNum - 1}`)} disabled={psalmNum <= 1}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum <= 1 ? 'default' : 'pointer', color: psalmNum <= 1 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum <= 1 ? 0.4 : 1 }}>
             ←
           </button>
-
           <div ref={dropdownRef} style={{ position: 'relative' }}>
             <button onClick={() => setPsalmDropdownOpen(!psalmDropdownOpen)}
               style={{ background: surface, border: `1px solid ${goldAccent}`, borderRadius: '8px', padding: '8px 20px', cursor: 'pointer', color: textPrimary, fontSize: '15px', fontFamily: 'inherit', fontWeight: '500', minWidth: isMobile ? '160px' : '180px', textAlign: 'center' }}>
@@ -552,7 +603,6 @@ export default function PsalmPage() {
               </div>
             )}
           </div>
-
           <button onClick={() => router.push(`/psalm/${psalmNum + 1}`)} disabled={psalmNum >= 150}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum >= 150 ? 'default' : 'pointer', color: psalmNum >= 150 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum >= 150 ? 0.4 : 1 }}>
             →
