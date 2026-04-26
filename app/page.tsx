@@ -33,6 +33,13 @@ export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>
 
+      {/* Sticky top bar */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <Logo size={32} />
+        </button>
+      </div>
+
       {/* Header */}
       <div style={{ textAlign: 'center', padding: isMobile ? '40px 16px 32px' : '60px 24px 40px' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>

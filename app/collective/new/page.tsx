@@ -48,7 +48,13 @@ export default function NewCollectiveReadingPage() {
       .select()
       .single();
     if (err) { setError('Something went wrong. Please try again.'); setCreating(false); return; }
-    if (data) router.push(`/collective/${id}`);
+    if (data) {
+      // Save to my collectives
+      const mine = JSON.parse(localStorage.getItem('my_collectives') || '[]');
+      mine.push({ id, name: name.trim(), role: 'creator' });
+      localStorage.setItem('my_collectives', JSON.stringify(mine));
+      router.push(`/collective/${id}`);
+    }
   }
 
   return (

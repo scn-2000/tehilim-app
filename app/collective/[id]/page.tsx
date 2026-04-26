@@ -120,6 +120,12 @@ export default function CollectiveReadingPage() {
     setUserName(name);
     setSavedName(name);
     localStorage.setItem('tehilim_user_name', name);
+    // Save to joined collectives
+    const joined = JSON.parse(localStorage.getItem('my_collectives') || '[]');
+    if (!joined.find((c: {id: string}) => c.id === id)) {
+      joined.push({ id, name: reading?.name || '', role: 'participant' });
+      localStorage.setItem('my_collectives', JSON.stringify(joined));
+    }
     setShowNamePrompt(false);
     if (pendingPsalm !== null) {
       claimPsalm(pendingPsalm, name);

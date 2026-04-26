@@ -190,6 +190,7 @@ export default function PsalmPage() {
   const [creatingList, setCreatingList] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListDesc, setNewListDesc] = useState('');
+  const [myCollectives, setMyCollectives] = useState<{id: string; name: string; role: string}[]>([]);
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -222,6 +223,7 @@ export default function PsalmPage() {
     setIsBookmarked(bm.includes(psalmNum));
     setBookmarks(bm);
     setLists(getLists());
+    setMyCollectives(JSON.parse(localStorage.getItem('my_collectives') || '[]'));
   }, [id]);
 
   useEffect(() => {
@@ -453,18 +455,33 @@ export default function PsalmPage() {
           )}
         {sidebarTab === 'collective' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Collective Reading</p>
+                <button onClick={() => { router.push('/collective/new'); setSidebarOpen(false); }}
+                  style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <IconPlus /> New
+                </button>
               </div>
-              <p style={{ fontSize: '13px', color: textMuted, marginBottom: '16px', lineHeight: '1.6' }}>
+
+              {myCollectives.length === 0 ? (
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic', marginBottom: '16px' }}>No collective readings yet.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                  {myCollectives.map((c: {id: string; name: string; role: string}) => (
+                    <button key={c.id} onClick={() => { router.push(`/collective/${c.id}`); setSidebarOpen(false); }}
+                      style={{ padding: '10px 14px', background: 'transparent', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px' }}>{c.name}</p>
+                        <p style={{ fontSize: '11px', color: textMuted, textTransform: 'capitalize' }}>{c.role}</p>
+                      </div>
+                      <span style={{ color: textMuted }}>›</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic' }}>
                 Join others in reading all 150 psalms together.
-              </p>
-              <button onClick={() => { router.push('/collective/new'); setSidebarOpen(false); }}
-                style={{ width: '100%', padding: '12px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', marginBottom: '10px' }}>
-                + Create Collective Reading
-              </button>
-              <p style={{ fontSize: '12px', color: textMuted, textAlign: 'center', fontStyle: 'italic' }}>
-                Share the link with others so they can claim psalms.
               </p>
             </>
           )}
@@ -485,7 +502,9 @@ export default function PsalmPage() {
             <button onClick={() => setSidebarOpen(true)} style={{ ...hdrBtn(), padding: '7px 9px' }}>
               <IconMenu />
             </button>
-            <Logo size={28} />
+            <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <Logo size={28} />
+            </button>
             {!isMobile && (
               <button onClick={() => router.push('/')}
                 style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
