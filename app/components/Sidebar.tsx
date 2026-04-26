@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from './Logo';
 import { getLists, createList, deleteList, PsalmList, encodeListForSharing } from '../lib/lists';
+import { supabase } from '../lib/supabase';
+import { getUser, signOut, syncBookmarksToCloud, loadBookmarksFromCloud, syncListsToCloud, loadListsFromCloud } from '../lib/auth';
 
 const IconClose = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -19,11 +21,6 @@ const IconPaperPlane = () => (
 const IconPlus = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-  </svg>
-);
-const IconCheck = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
 
@@ -43,6 +40,8 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   const [creatingList, setCreatingList] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListDesc, setNewListDesc] = useState('');
+  const [user, setUser] = useState<{id: string; email?: string} | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   const bg = darkMode ? '#1a1008' : '#fdf6ec';
   const surface = darkMode ? '#2c1e0f' : '#fff8ee';
@@ -52,6 +51,14 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   const goldAccent = '#c9a96e';
 
   useEffect(() => {
+    getUser().then(u => setUser(u as {id: string; email?: string} | null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) return;
     try {
       setBookmarks(JSON.parse(localStorage.getItem('bookmarks') || '[]'));
@@ -59,6 +66,21 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
       setMyCollectives(JSON.parse(localStorage.getItem('my_collectives') || '[]'));
     } catch {}
   }, [isOpen]);
+
+  async function handleSync() {
+    if (!user) return;
+    setSyncing(true);
+    await syncBookmarksToCloud(user.id);
+    await syncListsToCloud(user.id);
+    const cloudBookmarks = await loadBookmarksFromCloud(user.id);
+    localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
+    const cloudLists = await loadListsFromCloud(user.id);
+    localStorage.setItem('psalm_lists', JSON.stringify(cloudLists));
+    setBookmarks(cloudBookmarks);
+    setLists(cloudLists as PsalmList[]);
+    setSyncing(false);
+    alert('Synced successfully!');
+  }
 
   function handleCreateList() {
     if (!newListName.trim()) return;
@@ -243,8 +265,30 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
           )}
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: '16px 20px', borderTop: `1px solid ${border}` }}>
+        {/* Auth section */}
+        <div style={{ padding: '12px 20px', borderTop: `1px solid ${border}` }}>
+          {user ? (
+            <div>
+              <p style={{ fontSize: '12px', color: textMuted, marginBottom: '8px' }}>
+                Signed in as <strong style={{ color: textPrimary }}>{user.email}</strong>
+              </p>
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                <button onClick={handleSync} disabled={syncing}
+                  style={{ flex: 1, padding: '8px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit' }}>
+                  {syncing ? 'Syncing...' : '↑↓ Sync'}
+                </button>
+                <button onClick={async () => { await signOut(); setUser(null); }}
+                  style={{ flex: 1, padding: '8px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
+                  Sign out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => navigate('/auth')}
+              style={{ width: '100%', padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', marginBottom: '8px' }}>
+              Sign in / Create account
+            </button>
+          )}
           <button onClick={() => navigate('/')}
             style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
             ← All Psalms
