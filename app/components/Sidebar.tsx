@@ -100,7 +100,17 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
 
   function handleCreateList() {
     if (!newListName.trim()) return;
-    createList(newListName.trim(), newListDesc.trim());
+    const id = Math.random().toString(36).slice(2, 10);
+    const newList = {
+      id,
+      name: newListName.trim(),
+      description: newListDesc.trim(),
+      psalms: [],
+      createdAt: Date.now(),
+    };
+    const existing = JSON.parse(localStorage.getItem('psalm_lists') || '[]');
+    existing.push(newList);
+    localStorage.setItem('psalm_lists', JSON.stringify(existing));
     setLists(getLists());
     setNewListName('');
     setNewListDesc('');
@@ -136,7 +146,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
       )}
 
       <div style={{
-        position: 'fixed', top: 0, left: 0, height: '100vh', width: '300px',
+        position: 'fixed', top: 0, left: 0, height: '100vh', width: 'min(300px, 85vw)',
         background: surface, borderRight: `1px solid ${border}`,
         zIndex: 400, transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
         transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column',
