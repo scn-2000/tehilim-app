@@ -32,6 +32,7 @@ export default function CollectiveReadingPage() {
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [pendingPsalm, setPendingPsalm] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const nameRef = useRef<HTMLDivElement>(null);
 
   const bg = '#fdf6ec';
@@ -68,20 +69,22 @@ export default function CollectiveReadingPage() {
   }
 
   async function claimPsalm(psalmNum: number, name: string) {
-    if (!reading) return;
-    setSaving(true);
-    const existingClaims: Claim[] = reading.claims || [];
-    const updated = existingClaims.filter(c => c.psalmNum !== psalmNum);
-    updated.push({ psalmNum, name, claimedAt: new Date().toISOString() });
-    const { data } = await supabase
-      .from('collective_readings')
-      .update({ claims: updated })
-      .eq('id', id)
-      .select()
-      .single();
-    if (data) setReading(data);
-    setSaving(false);
-  }
+  if (!reading) return;
+  setSaving(true);
+  const existingClaims: Claim[] = reading.claims || [];
+  const updated = existingClaims.filter(c => c.psalmNum !== psalmNum);
+  updated.push({ psalmNum, name, claimedAt: new Date().toISOString() });
+  const { data } = await supabase
+    .from('collective_readings')
+    .update({ claims: updated })
+    .eq('id', id)
+    .select()
+    .single();
+  if (data) setReading(data);
+  setSaving(false);
+  setJustSaved(true);
+  setTimeout(() => setJustSaved(false), 2000);
+}
 
   async function unclaimPsalm(psalmNum: number) {
     if (!reading) return;
@@ -188,15 +191,19 @@ export default function CollectiveReadingPage() {
           </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {justSaved && (
+            <span style={{ fontSize: '13px', color: '#1e4d2b', fontStyle: 'italic' }}>✓ Saved</span>
+          )}
           {savedName && (
             <span style={{ fontSize: '13px', color: textMuted }}>Reading as <strong style={{ color: textPrimary }}>{savedName}</strong></span>
           )}
           <button onClick={handleShare}
-  style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '6px' }}>
-  ✈ Share link to invite others
-</button>
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 12px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
-            Share
+            style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
+            Share link
+          </button>
+          <button onClick={() => router.back()}
+            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
+            Done
           </button>
         </div>
       </div>
