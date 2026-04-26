@@ -51,9 +51,14 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   const goldAccent = '#c9a96e';
 
   useEffect(() => {
-    getUser().then(u => setUser(u as {id: string; email?: string} | null));
+    getUser().then(u => {
+      setUser(u as {id: string; email?: string} | null);
+      if (u) autoSync(u.id);
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) autoSync(u.id);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -66,6 +71,17 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
       setMyCollectives(JSON.parse(localStorage.getItem('my_collectives') || '[]'));
     } catch {}
   }, [isOpen]);
+
+  async function autoSync(userId: string) {
+    await syncBookmarksToCloud(userId);
+    await syncListsToCloud(userId);
+    const cloudBookmarks = await loadBookmarksFromCloud(userId);
+    localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
+    const cloudLists = await loadListsFromCloud(userId);
+    localStorage.setItem('psalm_lists', JSON.stringify(cloudLists));
+    setBookmarks(cloudBookmarks);
+    setLists(cloudLists as PsalmList[]);
+  }
 
   async function handleSync() {
     if (!user) return;
@@ -272,13 +288,9 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
               <p style={{ fontSize: '12px', color: textMuted, marginBottom: '8px' }}>
                 Signed in as <strong style={{ color: textPrimary }}>{user.email}</strong>
               </p>
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-                <button onClick={handleSync} disabled={syncing}
-                  style={{ flex: 1, padding: '8px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit' }}>
-                  {syncing ? 'Syncing...' : '↑↓ Sync'}
-                </button>
+              <div style={{ marginBottom: '8px' }}>
                 <button onClick={async () => { await signOut(); setUser(null); }}
-                  style={{ flex: 1, padding: '8px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
+                  style={{ width: '100%', padding: '8px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
                   Sign out
                 </button>
               </div>
