@@ -177,6 +177,7 @@ export default function PsalmPage() {
   const [showPhonetics, setShowPhonetics] = usePersistentState('pref_phonetics', false);
   const [fontSize, setFontSize] = usePersistentState('pref_fontsize', 'medium');
   const [darkMode, setDarkMode] = usePersistentState('pref_darkmode', false);
+  const [highContrast, setHighContrast] = usePersistentState('pref_highcontrast', false);
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
@@ -199,9 +200,9 @@ export default function PsalmPage() {
   const psalmNum = Number(id);
 
   const fontSizeMap: Record<string, { hebrew: string; english: string }> = {
-    small:  { hebrew: '18px', english: '13px' },
-    medium: { hebrew: isMobile ? '22px' : '26px', english: isMobile ? '15px' : '16px' },
-    large:  { hebrew: isMobile ? '26px' : '32px', english: isMobile ? '17px' : '19px' },
+    small:  { hebrew: highContrast ? '22px' : '18px', english: highContrast ? '15px' : '13px' },
+    medium: { hebrew: highContrast ? '28px' : isMobile ? '22px' : '26px', english: highContrast ? '17px' : isMobile ? '15px' : '16px' },
+    large:  { hebrew: highContrast ? '34px' : isMobile ? '26px' : '32px', english: highContrast ? '20px' : isMobile ? '17px' : '19px' },
   };
 
   useEffect(() => {
@@ -304,15 +305,15 @@ export default function PsalmPage() {
     }
   }
 
-  const bg = darkMode ? '#1a1008' : '#fdf6ec';
-  const surface = darkMode ? '#2c1e0f' : '#fff8ee';
-  const border = darkMode ? '#5c3d1e' : '#e8d5b5';
-  const textPrimary = darkMode ? '#f5e9d4' : '#2c1810';
-  const textMuted = darkMode ? '#c9a96e' : '#9a7a5a';
-  const hebrewColor = darkMode ? '#a8c4e0' : '#1a3a5c';
-  const englishColor = darkMode ? '#7ec89a' : '#1e4d2b';
-  const phoneticsColor = darkMode ? '#d4a86a' : '#7a4e1e';
-  const goldAccent = '#c9a96e';
+  const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
+  const surface = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
+  const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
+  const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#9a7a5a';
+  const hebrewColor = highContrast ? '#00008B' : darkMode ? '#a8c4e0' : '#1a3a5c';
+  const englishColor = highContrast ? '#000000' : darkMode ? '#7ec89a' : '#1e4d2b';
+  const phoneticsColor = highContrast ? '#8B0000' : darkMode ? '#d4a86a' : '#7a4e1e';
+  const goldAccent = highContrast ? '#000000' : '#c9a96e';
 
   const settingToggle = (active: boolean) => ({
     width: '42px', height: '24px', borderRadius: '12px',
@@ -603,9 +604,18 @@ export default function PsalmPage() {
                       </button>
                     ))}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                     <span style={{ fontSize: '15px', color: textPrimary }}>Dark Mode</span>
-                    <button style={settingToggle(darkMode)} onClick={() => setDarkMode(!darkMode)}>
+                    <button style={settingToggle(darkMode)} onClick={() => { setDarkMode(!darkMode); if (!darkMode) setHighContrast(false); }}>
+                      <div style={toggleKnob} />
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '15px', color: textPrimary }}>High Contrast</span>
+                      <p style={{ fontSize: '11px', color: textMuted, marginTop: '2px' }}>For visual accessibility</p>
+                    </div>
+                    <button style={settingToggle(highContrast)} onClick={() => { setHighContrast(!highContrast); if (!highContrast) setDarkMode(false); }}>
                       <div style={toggleKnob} />
                     </button>
                   </div>
@@ -659,7 +669,7 @@ export default function PsalmPage() {
           <p style={{ textAlign: 'center', color: textMuted, padding: '60px 0' }}>Loading...</p>
         ) : (
           hebrew.map((verse, i) => (
-            <div key={i} style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: `1px solid ${border}` }}>
+            <div key={i} style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: highContrast ? `2px solid #000000` : `1px solid ${border}` }}>
               {showHebrew && (
                 <p dir="rtl" style={{ fontSize: fontSizeMap[fontSize].hebrew, fontFamily: "'Frank Ruhl Libre', serif", lineHeight: '2', marginBottom: '10px', color: hebrewColor }}
                   dangerouslySetInnerHTML={{ __html: verse }} />
