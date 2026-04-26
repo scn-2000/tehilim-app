@@ -185,7 +185,7 @@ export default function PsalmPage() {
   const [shareOpen, setShareOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists'>('bookmarks');
+  const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists' | 'collective'>('bookmarks');
   const [lists, setLists] = useState<PsalmList[]>([]);
   const [creatingList, setCreatingList] = useState(false);
   const [newListName, setNewListName] = useState('');
@@ -357,7 +357,7 @@ export default function PsalmPage() {
         </div>
 
         <div style={{ display: 'flex', borderBottom: `1px solid ${border}` }}>
-          {(['bookmarks', 'lists'] as const).map(tab => (
+          {(['bookmarks', 'lists', 'collective'] as const).map(tab => (
             <button key={tab} onClick={() => setSidebarTab(tab)}
               style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '13px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit', textTransform: 'capitalize' }}>
               {tab}
@@ -449,6 +449,23 @@ export default function PsalmPage() {
                   ))}
                 </div>
               )}
+            </>
+          )}
+        {sidebarTab === 'collective' && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Collective Reading</p>
+              </div>
+              <p style={{ fontSize: '13px', color: textMuted, marginBottom: '16px', lineHeight: '1.6' }}>
+                Join others in reading all 150 psalms together — for healing, in memory, or for a shared intention.
+              </p>
+              <button onClick={() => { router.push('/collective/new'); setSidebarOpen(false); }}
+                style={{ width: '100%', padding: '12px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', marginBottom: '10px' }}>
+                + Create Collective Reading
+              </button>
+              <p style={{ fontSize: '12px', color: textMuted, textAlign: 'center', fontStyle: 'italic' }}>
+                Share the link with others so they can claim psalms.
+              </p>
             </>
           )}
         </div>
