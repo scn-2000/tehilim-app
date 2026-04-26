@@ -94,19 +94,16 @@ function translitSephardic(text: string): string {
 
 function usePersistentState<T>(key: string, defaultValue: T) {
   const [state, setState] = useState<T>(defaultValue);
-
   useEffect(() => {
     try {
       const stored = localStorage.getItem(key);
       if (stored !== null) setState(JSON.parse(stored));
     } catch {}
   }, [key]);
-
   const setPersistentState = (value: T) => {
     setState(value);
     try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
   };
-
   return [state, setPersistentState] as const;
 }
 
@@ -116,6 +113,47 @@ function getSet(key: string): number[] {
 function saveSet(key: string, arr: number[]) {
   try { localStorage.setItem(key, JSON.stringify(arr)); } catch {}
 }
+
+// SVG Icons
+const IconMenu = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+const IconBookmark = ({ filled }: { filled: boolean }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+  </svg>
+);
+const IconShare = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  </svg>
+);
+const IconSettings = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+);
+const IconClose = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+);
+const IconLink = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+  </svg>
+);
+const IconCopy = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+  </svg>
+);
 
 export default function PsalmPage() {
   const { id } = useParams();
@@ -131,9 +169,11 @@ export default function PsalmPage() {
   const [darkMode, setDarkMode] = usePersistentState('pref_darkmode', false);
 
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [psalmDropdownOpen, setPsalmDropdownOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -161,7 +201,9 @@ export default function PsalmPage() {
         setHebrew(data.he);
         setEnglish(data.text.map((v: string) => stripHtml(v)));
       });
-    setIsBookmarked(getSet('bookmarks').includes(psalmNum));
+    const bm = getSet('bookmarks');
+    setIsBookmarked(bm.includes(psalmNum));
+    setBookmarks(bm);
   }, [id]);
 
   useEffect(() => {
@@ -179,20 +221,20 @@ export default function PsalmPage() {
     const updated = arr.includes(psalmNum) ? arr.filter(n => n !== psalmNum) : [...arr, psalmNum];
     saveSet('bookmarks', updated);
     setIsBookmarked(!isBookmarked);
+    setBookmarks(updated);
   }
 
   function handleShare(type: 'link' | 'text') {
-    const url = `https://tehilim-app.vercel.app/psalm/${psalmNum}`;
+    const url = `https://tehilimforall.com/psalm/${psalmNum}`;
     const psalmText = hebrew.map((verse, i) =>
       `${i + 1}. ${stripHtml(verse)}\n${english[i] || ''}`
     ).join('\n\n');
-
     if (type === 'link') {
       if (navigator.share) {
         navigator.share({ title: `Psalm ${psalmNum} — TehilimForAll`, url });
       } else {
         navigator.clipboard.writeText(url);
-        alert('Link copied to clipboard!');
+        alert('Link copied!');
       }
     } else {
       const text = `Psalm ${psalmNum}\n\n${psalmText}\n\n${url}`;
@@ -200,7 +242,7 @@ export default function PsalmPage() {
         navigator.share({ title: `Psalm ${psalmNum} — TehilimForAll`, text, url });
       } else {
         navigator.clipboard.writeText(text);
-        alert('Psalm text copied to clipboard!');
+        alert('Psalm text copied!');
       }
     }
   }
@@ -225,67 +267,128 @@ export default function PsalmPage() {
   });
   const toggleKnob = { width: '18px', height: '18px', borderRadius: '50%', background: 'white' };
 
-  const iconBtn = (active = false, activeBg = '') => ({
+  const hdrBtn = (active = false, activeBg = '') => ({
     background: active ? activeBg : 'none',
     border: `1px solid ${active ? activeBg : border}`,
-    borderRadius: '8px', padding: '8px 10px',
-    cursor: 'pointer', display: 'flex', alignItems: 'center',
-    gap: '6px', transition: 'all 0.2s', flexShrink: 0,
+    borderRadius: '8px', padding: '7px 9px',
+    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: active ? 'white' : textMuted,
+    transition: 'all 0.2s', flexShrink: 0,
   });
 
   return (
     <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "'Lora', Georgia, serif", transition: 'background 0.3s' }}>
 
+      {/* Sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, transition: 'opacity 0.2s' }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, height: '100vh', width: '280px',
+        background: surface, borderRight: `1px solid ${border}`,
+        zIndex: 400, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 0.3s ease', padding: '0',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        {/* Sidebar header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Logo size={28} />
+            <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>TehilimForAll</span>
+          </div>
+          <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
+            <IconClose />
+          </button>
+        </div>
+
+        {/* Bookmarks list */}
+        <div style={{ padding: '20px', flex: 1, overflowY: 'auto' }}>
+          <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>
+            Bookmarks
+          </p>
+          {bookmarks.length === 0 ? (
+            <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No bookmarks yet.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {bookmarks.sort((a, b) => a - b).map(num => (
+                <button key={num} onClick={() => { router.push(`/psalm/${num}`); setSidebarOpen(false); }}
+                  style={{
+                    background: num === psalmNum ? goldAccent : 'transparent',
+                    border: `1px solid ${num === psalmNum ? goldAccent : border}`,
+                    borderRadius: '8px', padding: '10px 14px', cursor: 'pointer',
+                    textAlign: 'left', fontSize: '14px',
+                    color: num === psalmNum ? 'white' : textPrimary,
+                    fontFamily: 'inherit',
+                  }}>
+                  Psalm {num}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar footer */}
+        <div style={{ padding: '16px 20px', borderTop: `1px solid ${border}` }}>
+          <button onClick={() => { router.push('/'); setSidebarOpen(false); }}
+            style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
+            ← All Psalms
+          </button>
+        </div>
+      </div>
+
       {/* Top bar */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '10px 12px' : '12px 24px' }}>
 
-        {/* Row 1: Logo + All Psalms | Bookmark + Share + Settings */}
+        {/* Row 1 */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '8px' : '0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Logo size={28} />
-            <button onClick={() => router.push('/')}
-              style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-              ← All Psalms
+
+          {/* LEFT: Hamburger + Logo + All Psalms */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button onClick={() => setSidebarOpen(true)} style={{ ...hdrBtn(), padding: '7px 9px' }}>
+              <IconMenu />
             </button>
+            <Logo size={28} />
+            {!isMobile && (
+              <button onClick={() => router.push('/')}
+                style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
+                ← All Psalms
+              </button>
+            )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* RIGHT: Bookmark + Share + Settings */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
 
-            {/* Bookmark */}
-            <button onClick={toggleBookmark} style={iconBtn(isBookmarked, goldAccent)}>
-              <span style={{ fontSize: '15px' }}>🔖</span>
-              {!isMobile && (
-                <span style={{ fontSize: '13px', color: isBookmarked ? 'white' : textMuted, fontFamily: 'inherit' }}>
-                  {isBookmarked ? 'Saved' : 'Bookmark'}
-                </span>
-              )}
+            <button onClick={toggleBookmark} style={hdrBtn(isBookmarked, goldAccent)} title="Bookmark">
+              <IconBookmark filled={isBookmarked} />
             </button>
 
-            {/* Share */}
             <div ref={shareRef} style={{ position: 'relative' }}>
-              <button onClick={() => setShareOpen(!shareOpen)}
-                style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 10px', cursor: 'pointer', fontSize: '16px' }}>
-                🔗
+              <button onClick={() => setShareOpen(!shareOpen)} style={hdrBtn()} title="Share">
+                <IconShare />
               </button>
               {shareOpen && (
-                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '200px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
+                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '190px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
                   <button onClick={() => { handleShare('link'); setShareOpen(false); }}
-                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px' }}>
-                    🔗 Share link
+                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <IconLink /> Share link
                   </button>
                   <button onClick={() => { handleShare('text'); setShareOpen(false); }}
-                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px' }}>
-                    📋 Share with text
+                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <IconCopy /> Share with text
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Settings */}
             <div ref={settingsRef} style={{ position: 'relative' }}>
-              <button onClick={() => setSettingsOpen(!settingsOpen)}
-                style={{ background: settingsOpen ? surface : 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 10px', cursor: 'pointer', fontSize: '16px' }}>
-                ⚙️
+              <button onClick={() => setSettingsOpen(!settingsOpen)} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')} title="Settings">
+                <IconSettings />
               </button>
               {settingsOpen && (
                 <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '20px', width: '260px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
