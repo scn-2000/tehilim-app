@@ -10,6 +10,8 @@ export default function AuthPage() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -30,11 +32,25 @@ export default function AuthPage() {
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) { setError('Please fill in all fields.'); return; }
+    if (mode === 'signup' && (!firstName.trim() || !lastName.trim())) { setError('Please enter your first and last name.'); return; }
     setLoading(true); setError(''); setSuccess('');
 
     if (mode === 'signup') {
-      const { error: err } = await supabase.auth.signUp({ email, password });
+      const { data, error: err } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+          }
+        }
+      });
       if (err) { setError(err.message); setLoading(false); return; }
+      if (data.user) {
+        localStorage.setItem('tehilim_user_name', `${firstName.trim()} ${lastName.trim()}`.trim());
+      }
       setSuccess('Account created! You are now signed in.');
       setTimeout(() => router.push('/'), 1500);
     } else {
@@ -48,9 +64,7 @@ export default function AuthPage() {
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: 'https://tehilimforall.com',
-      },
+      options: { redirectTo: 'https://tehilimforall.com' },
     });
     if (error) setError(error.message);
   }
@@ -95,6 +109,16 @@ export default function AuthPage() {
           <span style={{ fontSize: '12px', color: textMuted }}>or</span>
           <div style={{ flex: 1, height: '1px', background: border }} />
         </div>
+
+        {/* Name fields for signup */}
+        {mode === 'signup' && (
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input value={firstName} onChange={e => setFirstName(e.target.value)}
+              placeholder="First name" style={{ ...inputStyle, flex: 1 }} />
+            <input value={lastName} onChange={e => setLastName(e.target.value)}
+              placeholder="Last name" style={{ ...inputStyle, flex: 1 }} />
+          </div>
+        )}
 
         <input type="email" value={email} onChange={e => setEmail(e.target.value)}
           placeholder="Email address" style={inputStyle} />

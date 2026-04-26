@@ -46,8 +46,19 @@ export default function CollectiveReadingPage() {
   const englishColor = '#1e4d2b';
 
   useEffect(() => {
-    const stored = localStorage.getItem('tehilim_user_name');
-    if (stored) { setUserName(stored); setSavedName(stored); }
+    async function loadName() {
+      const { getUserDisplayName } = await import('../../lib/auth');
+      const accountName = await getUserDisplayName();
+      if (accountName) {
+        setUserName(accountName);
+        setSavedName(accountName);
+        localStorage.setItem('tehilim_user_name', accountName);
+      } else {
+        const stored = localStorage.getItem('tehilim_user_name');
+        if (stored) { setUserName(stored); setSavedName(stored); }
+      }
+    }
+    loadName();
     fetchReading();
   }, [id]);
 

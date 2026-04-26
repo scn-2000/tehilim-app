@@ -9,7 +9,16 @@ export async function signOut() {
   await supabase.auth.signOut();
 }
 
-// Sync local bookmarks to cloud
+export async function getUserDisplayName(): Promise<string> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return '';
+  const meta = user.user_metadata;
+  if (meta?.full_name) return meta.full_name;
+  if (meta?.name) return meta.name;
+  if (meta?.first_name) return `${meta.first_name} ${meta.last_name || ''}`.trim();
+  return user.email?.split('@')[0] || '';
+}
+
 export async function syncBookmarksToCloud(userId: string) {
   const local = JSON.parse(localStorage.getItem('bookmarks') || '[]') as number[];
   if (local.length === 0) return;
@@ -17,7 +26,6 @@ export async function syncBookmarksToCloud(userId: string) {
   await supabase.from('user_bookmarks').upsert(inserts, { onConflict: 'user_id,psalm_num' });
 }
 
-// Load bookmarks from cloud
 export async function loadBookmarksFromCloud(userId: string): Promise<number[]> {
   const { data } = await supabase
     .from('user_bookmarks')
@@ -26,17 +34,14 @@ export async function loadBookmarksFromCloud(userId: string): Promise<number[]> 
   return data?.map(r => r.psalm_num) || [];
 }
 
-// Add bookmark to cloud
 export async function addBookmarkToCloud(userId: string, psalmNum: number) {
   await supabase.from('user_bookmarks').upsert({ user_id: userId, psalm_num: psalmNum }, { onConflict: 'user_id,psalm_num' });
 }
 
-// Remove bookmark from cloud
 export async function removeBookmarkFromCloud(userId: string, psalmNum: number) {
   await supabase.from('user_bookmarks').delete().eq('user_id', userId).eq('psalm_num', psalmNum);
 }
 
-// Sync local lists to cloud
 export async function syncListsToCloud(userId: string) {
   const local = JSON.parse(localStorage.getItem('psalm_lists') || '[]');
   for (const list of local) {
@@ -54,7 +59,6 @@ export async function syncListsToCloud(userId: string) {
   }
 }
 
-// Load lists from cloud
 export async function loadListsFromCloud(userId: string) {
   const { data: lists } = await supabase
     .from('user_lists')
