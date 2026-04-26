@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Logo from '../../components/Logo';
+import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, PsalmList } from '../../lib/lists';
 
 function stripHtml(html: string): string {
   return html
@@ -114,7 +115,6 @@ function saveSet(key: string, arr: number[]) {
   try { localStorage.setItem(key, JSON.stringify(arr)); } catch {}
 }
 
-// SVG Icons
 const IconMenu = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
     <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -174,6 +174,10 @@ export default function PsalmPage() {
   const [psalmDropdownOpen, setPsalmDropdownOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists'>('bookmarks');
+  const [lists, setLists] = useState<PsalmList[]>([]);
+  const [creatingList, setCreatingList] = useState(false);
+  const [newListName, setNewListName] = useState('');
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -204,6 +208,7 @@ export default function PsalmPage() {
     const bm = getSet('bookmarks');
     setIsBookmarked(bm.includes(psalmNum));
     setBookmarks(bm);
+    setLists(getLists());
   }, [id]);
 
   useEffect(() => {
@@ -222,6 +227,40 @@ export default function PsalmPage() {
     saveSet('bookmarks', updated);
     setIsBookmarked(!isBookmarked);
     setBookmarks(updated);
+  }
+
+  function handleCreateList() {
+    if (!newListName.trim()) return;
+    createList(newListName.trim());
+    setLists(getLists());
+    setNewListName('');
+    setCreatingList(false);
+  }
+
+  function handleDeleteList(listId: string) {
+    deleteList(listId);
+    setLists(getLists());
+  }
+
+  function handleAddToList(listId: string) {
+    addPsalmToList(listId, psalmNum);
+    setLists(getLists());
+  }
+
+  function handleRemoveFromList(listId: string) {
+    removePsalmFromList(listId, psalmNum);
+    setLists(getLists());
+  }
+
+  function handleShareList(list: PsalmList) {
+    const encoded = encodeListForSharing(list);
+    const url = `https://tehilimforall.com/list/${encoded}`;
+    if (navigator.share) {
+      navigator.share({ title: `${list.name} — TehilimForAll`, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      alert('List link copied!');
+    }
   }
 
   function handleShare(type: 'link' | 'text') {
@@ -279,23 +318,18 @@ export default function PsalmPage() {
   return (
     <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "'Lora', Georgia, serif", transition: 'background 0.3s' }}>
 
-      {/* Sidebar overlay */}
       {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, transition: 'opacity 0.2s' }}
-        />
+        <div onClick={() => setSidebarOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300 }} />
       )}
 
       {/* Sidebar */}
       <div style={{
-        position: 'fixed', top: 0, left: 0, height: '100vh', width: '280px',
+        position: 'fixed', top: 0, left: 0, height: '100vh', width: '300px',
         background: surface, borderRight: `1px solid ${border}`,
         zIndex: 400, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.3s ease', padding: '0',
-        display: 'flex', flexDirection: 'column',
+        transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column',
       }}>
-        {/* Sidebar header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Logo size={28} />
@@ -306,33 +340,106 @@ export default function PsalmPage() {
           </button>
         </div>
 
-        {/* Bookmarks list */}
-        <div style={{ padding: '20px', flex: 1, overflowY: 'auto' }}>
-          <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>
-            Bookmarks
-          </p>
-          {bookmarks.length === 0 ? (
-            <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No bookmarks yet.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {bookmarks.sort((a, b) => a - b).map(num => (
-                <button key={num} onClick={() => { router.push(`/psalm/${num}`); setSidebarOpen(false); }}
-                  style={{
-                    background: num === psalmNum ? goldAccent : 'transparent',
-                    border: `1px solid ${num === psalmNum ? goldAccent : border}`,
-                    borderRadius: '8px', padding: '10px 14px', cursor: 'pointer',
-                    textAlign: 'left', fontSize: '14px',
-                    color: num === psalmNum ? 'white' : textPrimary,
-                    fontFamily: 'inherit',
-                  }}>
-                  Psalm {num}
+        <div style={{ display: 'flex', borderBottom: `1px solid ${border}` }}>
+          {(['bookmarks', 'lists'] as const).map(tab => (
+            <button key={tab} onClick={() => setSidebarTab(tab)}
+              style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '13px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit', textTransform: 'capitalize' }}>
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+          {sidebarTab === 'bookmarks' && (
+            <>
+              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Bookmarks</p>
+              {bookmarks.length === 0 ? (
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No bookmarks yet.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {bookmarks.sort((a, b) => a - b).map(num => (
+                    <button key={num} onClick={() => { router.push(`/psalm/${num}`); setSidebarOpen(false); }}
+                      style={{ background: num === psalmNum ? goldAccent : 'transparent', border: `1px solid ${num === psalmNum ? goldAccent : border}`, borderRadius: '8px', padding: '10px 14px', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: num === psalmNum ? 'white' : textPrimary, fontFamily: 'inherit' }}>
+                      Psalm {num}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {sidebarTab === 'lists' && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>My Lists</p>
+                <button onClick={() => setCreatingList(true)}
+                  style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit' }}>
+                  + New List
                 </button>
-              ))}
-            </div>
+              </div>
+
+              {creatingList && (
+                <div style={{ background: darkMode ? '#3a2510' : '#fef9f0', border: `1px solid ${border}`, borderRadius: '10px', padding: '14px', marginBottom: '12px' }}>
+                  <p style={{ fontSize: '13px', color: textPrimary, marginBottom: '8px', fontWeight: '500' }}>New List</p>
+                  <input value={newListName} onChange={e => setNewListName(e.target.value)}
+                    placeholder="List name..." onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none' }} />
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button onClick={handleCreateList}
+                      style={{ flex: 1, padding: '7px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
+                      Create
+                    </button>
+                    <button onClick={() => { setCreatingList(false); setNewListName(''); }}
+                      style={{ flex: 1, padding: '7px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {lists.length === 0 && !creatingList ? (
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No lists yet. Create one!</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {lists.map(list => (
+                    <div key={list.id} style={{ border: `1px solid ${border}`, borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px' }}>{list.name}</p>
+                          <p style={{ fontSize: '12px', color: textMuted }}>{list.psalms.length} psalm{list.psalms.length !== 1 ? 's' : ''}</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button onClick={() => handleShareList(list)} title="Share list"
+                            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '6px', padding: '5px 7px', cursor: 'pointer', color: textMuted }}>
+                            <IconShare />
+                          </button>
+                          <button onClick={() => handleDeleteList(list.id)} title="Delete list"
+                            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '6px', padding: '5px 7px', cursor: 'pointer', color: textMuted }}>
+                            <IconClose />
+                          </button>
+                        </div>
+                      </div>
+                      <div style={{ borderTop: `1px solid ${border}`, padding: '8px 14px', background: darkMode ? '#2a1a0a' : '#faf4ea' }}>
+                        {list.psalms.includes(psalmNum) ? (
+                          <button onClick={() => handleRemoveFromList(list.id)}
+                            style={{ width: '100%', padding: '6px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
+                            ✓ Psalm {psalmNum} added — remove
+                          </button>
+                        ) : (
+                          <button onClick={() => handleAddToList(list.id)}
+                            style={{ width: '100%', padding: '6px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit' }}>
+                            + Add Psalm {psalmNum} to list
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 
-        {/* Sidebar footer */}
         <div style={{ padding: '16px 20px', borderTop: `1px solid ${border}` }}>
           <button onClick={() => { router.push('/'); setSidebarOpen(false); }}
             style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
@@ -343,11 +450,7 @@ export default function PsalmPage() {
 
       {/* Top bar */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '10px 12px' : '12px 24px' }}>
-
-        {/* Row 1 */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '8px' : '0' }}>
-
-          {/* LEFT: Hamburger + Logo + All Psalms */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button onClick={() => setSidebarOpen(true)} style={{ ...hdrBtn(), padding: '7px 9px' }}>
               <IconMenu />
@@ -361,9 +464,7 @@ export default function PsalmPage() {
             )}
           </div>
 
-          {/* RIGHT: Bookmark + Share + Settings */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-
             <button onClick={toggleBookmark} style={hdrBtn(isBookmarked, goldAccent)} title="Bookmark">
               <IconBookmark filled={isBookmarked} />
             </button>
@@ -427,7 +528,6 @@ export default function PsalmPage() {
           </div>
         </div>
 
-        {/* Row 2: Prev | Psalm dropdown | Next */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
           <button onClick={() => router.push(`/psalm/${psalmNum - 1}`)} disabled={psalmNum <= 1}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum <= 1 ? 'default' : 'pointer', color: psalmNum <= 1 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum <= 1 ? 0.4 : 1 }}>
