@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getLists, decodeSharedList, PsalmList } from '../../lib/lists';
+import { getLists, decodeSharedList } from '../../lib/lists';
 import Logo from '../../components/Logo';
 
 export default function ListPage() {
@@ -12,14 +12,12 @@ export default function ListPage() {
   const [isShared, setIsShared] = useState(false);
 
   useEffect(() => {
-    // First check if it's a local list
     const localLists = getLists();
     const localList = localLists.find(l => l.id === id);
     if (localList) {
       setList(localList);
       return;
     }
-    // Otherwise try to decode as shared list
     const decoded = decodeSharedList(id as string);
     if (decoded) {
       setList(decoded);
@@ -72,7 +70,7 @@ export default function ListPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {list.psalms.sort((a, b) => a - b).map(num => (
-              <button key={num} onClick={() => router.push(`/psalm/${num}`)}
+              <button key={num} onClick={() => router.push(`/psalm/${num}?list=${id}`)}
                 style={{ padding: '16px 18px', background: surface, border: `1px solid ${border}`, borderRadius: '10px', cursor: 'pointer', textAlign: 'left', fontSize: '15px', color: textPrimary, fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: '500' }}>Psalm {num}</span>
                 <span style={{ color: textMuted, fontSize: '13px' }}>Read →</span>
