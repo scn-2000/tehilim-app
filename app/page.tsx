@@ -61,16 +61,6 @@ export default function Home() {
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '0 auto' }} />
       </div>
 
-      {/* Continue from bookmark */}
-      {bookmarks.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px', padding: '0 16px' }}>
-          <button onClick={() => router.push(`/psalm/${bookmarks[bookmarks.length - 1]}`)}
-            style={{ background: 'none', border: `1px solid ${goldAccent}`, borderRadius: '20px', padding: '10px 20px', cursor: 'pointer', fontSize: '14px', color: goldAccent, fontFamily: 'inherit' }}>
-            🔖 Go to last bookmark — Psalm {bookmarks[bookmarks.length - 1]}
-          </button>
-        </div>
-      )}
-
       {/* Psalm grid */}
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 12px 60px' : '0 24px 80px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMobile ? 5 : 10}, 1fr)`, gap: isMobile ? '6px' : '8px' }}>

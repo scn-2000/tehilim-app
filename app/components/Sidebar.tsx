@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from './Logo';
-import { getLists, PsalmList, encodeListForSharing } from '../lib/lists';
+import { getLists, createList, deleteList, PsalmList, encodeListForSharing } from '../lib/lists';
 
 const IconClose = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -62,7 +62,6 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
 
   function handleCreateList() {
     if (!newListName.trim()) return;
-    const { createList } = require('../lib/lists');
     createList(newListName.trim(), newListDesc.trim());
     setLists(getLists());
     setNewListName('');
@@ -71,7 +70,6 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   }
 
   function handleDeleteList(listId: string) {
-    const { deleteList } = require('../lib/lists');
     deleteList(listId);
     setLists(getLists());
   }
