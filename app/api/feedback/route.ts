@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     });
 
     await resend.emails.send({
-      from: 'TehilimForAll <onboarding@resend.dev>',
+      from: 'TehilimForAll <noreply@tehilimforall.com>',
       to: 'samuel.c.nejman@gmail.com',
       subject: 'TehilimForAll Feedback',
       html: `
