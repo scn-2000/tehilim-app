@@ -1,0 +1,67 @@
+{
+  "allPsalms": "← Alle Psalmen",
+  "settings": {
+    "title": "Weergave-instellingen",
+    "hebrew": "Hebreeuws",
+    "english": "Engels",
+    "phonetics": "Fonetiek",
+    "fontSize": "Lettergrootte",
+    "small": "Klein",
+    "medium": "Middel",
+    "large": "Groot",
+    "darkMode": "Donkere modus",
+    "highContrast": "Hoog contrast",
+    "accessibility": "Voor visuele toegankelijkheid",
+    "language": "Taal"
+  },
+  "psalm": {
+    "loading": "Laden...",
+    "title": "Psalm"
+  },
+  "share": {
+    "link": "Link delen",
+    "text": "Delen met tekst"
+  },
+  "save": {
+    "to": "Opslaan in",
+    "bookmarks": "Bladwijzers",
+    "newList": "Nieuwe lijst"
+  },
+  "sidebar": {
+    "title": "TehilimForAll",
+    "bookmarksTab": "Bladwijzers",
+    "listsTab": "Lijsten",
+    "collectiveTab": "Collectief",
+    "noBookmarks": "Nog geen bladwijzers.",
+    "myLists": "Mijn Lijsten",
+    "newList": "Nieuwe Lijst",
+    "newListTitle": "Nieuwe Lijst",
+    "noLists": "Nog geen lijsten. Maak er een!",
+    "listNamePlaceholder": "Lijstnaam...",
+    "descPlaceholder": "Beschrijving (optioneel)...",
+    "create": "Aanmaken",
+    "cancel": "Annuleren",
+    "psalms": "psalmen",
+    "psalm": "psalm",
+    "collectiveReading": "Collectief Lezen",
+    "new": "Nieuw",
+    "noCollectives": "Nog geen collectieve lezingen.",
+    "collectiveTagline": "Lees samen alle 150 psalmen.",
+    "signedInAs": "Ingelogd als",
+    "signOut": "Uitloggen",
+    "signIn": "Inloggen / Account aanmaken",
+    "allPsalms": "← Alle Psalmen",
+    "feedback": "Feedback sturen",
+    "remove": "Verwijderen",
+    "addPsalm": "Psalm toevoegen"
+  },
+  "feedback": {
+    "title": "Feedback sturen",
+    "messagePlaceholder": "Uw bericht...",
+    "emailPlaceholder": "Uw e-mail (optioneel)",
+    "send": "Versturen",
+    "sending": "Versturen...",
+    "success": "Bedankt voor uw feedback!",
+    "close": "Sluiten"
+  }
+}

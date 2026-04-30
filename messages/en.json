@@ -1,0 +1,67 @@
+{
+  "allPsalms": "← All Psalms",
+  "settings": {
+    "title": "Display Settings",
+    "hebrew": "Hebrew",
+    "english": "English",
+    "phonetics": "Phonetics",
+    "fontSize": "Font Size",
+    "small": "Small",
+    "medium": "Medium",
+    "large": "Large",
+    "darkMode": "Dark Mode",
+    "highContrast": "High Contrast",
+    "accessibility": "For visual accessibility",
+    "language": "Language"
+  },
+  "psalm": {
+    "loading": "Loading...",
+    "title": "Psalm"
+  },
+  "share": {
+    "link": "Share link",
+    "text": "Share with text"
+  },
+  "save": {
+    "to": "Save to",
+    "bookmarks": "Bookmarks",
+    "newList": "New list"
+  },
+  "sidebar": {
+    "title": "TehilimForAll",
+    "bookmarksTab": "Bookmarks",
+    "listsTab": "Lists",
+    "collectiveTab": "Collective",
+    "noBookmarks": "No bookmarks yet.",
+    "myLists": "My Lists",
+    "newList": "New List",
+    "newListTitle": "New List",
+    "noLists": "No lists yet. Create one!",
+    "listNamePlaceholder": "List name...",
+    "descPlaceholder": "Description (optional)...",
+    "create": "Create",
+    "cancel": "Cancel",
+    "psalms": "psalms",
+    "psalm": "psalm",
+    "collectiveReading": "Collective Reading",
+    "new": "New",
+    "noCollectives": "No collective readings yet.",
+    "collectiveTagline": "Join others in reading all 150 psalms together.",
+    "signedInAs": "Signed in as",
+    "signOut": "Sign out",
+    "signIn": "Sign in / Create account",
+    "allPsalms": "← All Psalms",
+    "feedback": "Send Feedback",
+    "remove": "Remove",
+    "addPsalm": "Add Psalm"
+  },
+  "feedback": {
+    "title": "Send Feedback",
+    "messagePlaceholder": "Your message...",
+    "emailPlaceholder": "Your email (optional)",
+    "send": "Send",
+    "sending": "Sending...",
+    "success": "Thank you for your feedback!",
+    "close": "Close"
+  }
+}

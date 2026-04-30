@@ -6,6 +6,7 @@ import Logo from './Logo';
 import { getLists, createList, deleteList, PsalmList, encodeListForSharing } from '../lib/lists';
 import { supabase } from '../lib/supabase';
 import { getUser, signOut, syncBookmarksToCloud, loadBookmarksFromCloud, syncListsToCloud, loadListsFromCloud } from '../lib/auth';
+import { useTranslations } from '../lib/i18n';
 
 const IconClose = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -33,6 +34,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: SidebarProps) {
   const router = useRouter();
+  const { t } = useTranslations();
   const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists' | 'collective'>('bookmarks');
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [lists, setLists] = useState<PsalmList[]>([]);
@@ -42,6 +44,12 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   const [newListDesc, setNewListDesc] = useState('');
   const [user, setUser] = useState<{id: string; email?: string} | null>(null);
   const [syncing, setSyncing] = useState(false);
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackEmail, setFeedbackEmail] = useState('');
+  const [feedbackSending, setFeedbackSending] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
 
   const bg = darkMode ? '#1a1008' : '#fdf6ec';
   const surface = darkMode ? '#2c1e0f' : '#fff8ee';
@@ -95,7 +103,6 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
     setBookmarks(cloudBookmarks);
     setLists(cloudLists as PsalmList[]);
     setSyncing(false);
-    alert('Synced successfully!');
   }
 
   function handleCreateList() {
@@ -133,6 +140,38 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
     }
   }
 
+  async function handleFeedback() {
+    if (!feedbackMessage.trim()) return;
+    setFeedbackSending(true);
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: feedbackMessage,
+          email: feedbackEmail,
+          page: window.location.pathname,
+        }),
+      });
+      setFeedbackSent(true);
+      setFeedbackMessage('');
+    } catch {}
+    setFeedbackSending(false);
+  }
+
+  function openFeedback() {
+    setFeedbackEmail(user?.email || '');
+    setFeedbackSent(false);
+    setFeedbackMessage('');
+    setFeedbackOpen(true);
+  }
+
+  function closeFeedback() {
+    setFeedbackOpen(false);
+    setFeedbackMessage('');
+    setFeedbackSent(false);
+  }
+
   function navigate(path: string) {
     router.push(path);
     onClose();
@@ -157,7 +196,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
             <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <Logo size={28} />
             </button>
-            <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>TehilimForAll</span>
+            <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>{t.sidebar.title}</span>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
             <IconClose />
@@ -166,10 +205,14 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
 
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: `1px solid ${border}` }}>
-          {(['bookmarks', 'lists', 'collective'] as const).map(tab => (
+          {([
+            ['bookmarks', t.sidebar.bookmarksTab],
+            ['lists', t.sidebar.listsTab],
+            ['collective', t.sidebar.collectiveTab],
+          ] as const).map(([tab, label]) => (
             <button key={tab} onClick={() => setSidebarTab(tab)}
-              style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '13px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit', textTransform: 'capitalize' }}>
-              {tab}
+              style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '13px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit' }}>
+              {label}
             </button>
           ))}
         </div>
@@ -179,15 +222,15 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
 
           {sidebarTab === 'bookmarks' && (
             <>
-              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Bookmarks</p>
+              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>{t.sidebar.bookmarksTab}</p>
               {bookmarks.length === 0 ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No bookmarks yet.</p>
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>{t.sidebar.noBookmarks}</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {bookmarks.sort((a: number, b: number) => a - b).map((num: number) => (
                     <button key={num} onClick={() => navigate(`/psalm/${num}`)}
                       style={{ background: num === psalmNum ? goldAccent : 'transparent', border: `1px solid ${num === psalmNum ? goldAccent : border}`, borderRadius: '8px', padding: '10px 14px', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: num === psalmNum ? 'white' : textPrimary, fontFamily: 'inherit' }}>
-                      Psalm {num}
+                      {t.psalm.title} {num}
                     </button>
                   ))}
                 </div>
@@ -198,37 +241,37 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
           {sidebarTab === 'lists' && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>My Lists</p>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.sidebar.myLists}</p>
                 <button onClick={() => setCreatingList(true)}
                   style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <IconPlus /> New List
+                  <IconPlus /> {t.sidebar.newList}
                 </button>
               </div>
 
               {creatingList && (
                 <div style={{ background: darkMode ? '#3a2510' : '#fef9f0', border: `1px solid ${border}`, borderRadius: '10px', padding: '14px', marginBottom: '12px' }}>
-                  <p style={{ fontSize: '13px', color: textPrimary, marginBottom: '8px', fontWeight: '500' }}>New List</p>
+                  <p style={{ fontSize: '13px', color: textPrimary, marginBottom: '8px', fontWeight: '500' }}>{t.sidebar.newListTitle}</p>
                   <input value={newListName} onChange={e => setNewListName(e.target.value)}
-                    placeholder="List name..." onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
+                    placeholder={t.sidebar.listNamePlaceholder} onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none' }} />
                   <textarea value={newListDesc} onChange={e => setNewListDesc(e.target.value)}
-                    placeholder="Description (optional)..." rows={2}
+                    placeholder={t.sidebar.descPlaceholder} rows={2}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none', resize: 'none' }} />
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button onClick={handleCreateList}
                       style={{ flex: 1, padding: '7px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
-                      Create
+                      {t.sidebar.create}
                     </button>
                     <button onClick={() => { setCreatingList(false); setNewListName(''); setNewListDesc(''); }}
                       style={{ flex: 1, padding: '7px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
-                      Cancel
+                      {t.sidebar.cancel}
                     </button>
                   </div>
                 </div>
               )}
 
               {lists.length === 0 && !creatingList ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No lists yet. Create one!</p>
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>{t.sidebar.noLists}</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {lists.map(list => (
@@ -238,7 +281,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
                         <div>
                           <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px', fontFamily: 'inherit' }}>{list.name}</p>
                           {list.description && <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic', marginBottom: '2px', fontFamily: 'inherit' }}>{list.description}</p>}
-                          <p style={{ fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>{list.psalms.length} psalm{list.psalms.length !== 1 ? 's' : ''}</p>
+                          <p style={{ fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>{list.psalms.length} {list.psalms.length !== 1 ? t.sidebar.psalms : t.sidebar.psalm}</p>
                         </div>
                         <span style={{ color: textMuted, fontSize: '16px' }}>›</span>
                       </button>
@@ -262,15 +305,15 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
           {sidebarTab === 'collective' && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Collective Reading</p>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.sidebar.collectiveReading}</p>
                 <button onClick={() => navigate('/collective/new')}
                   style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <IconPlus /> New
+                  <IconPlus /> {t.sidebar.new}
                 </button>
               </div>
 
               {myCollectives.length === 0 ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic', marginBottom: '16px' }}>No collective readings yet.</p>
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic', marginBottom: '16px' }}>{t.sidebar.noCollectives}</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                   {myCollectives.map((c: {id: string; name: string; role: string}) => (
@@ -287,38 +330,79 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
               )}
 
               <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic' }}>
-                Join others in reading all 150 psalms together.
+                {t.sidebar.collectiveTagline}
               </p>
             </>
           )}
         </div>
 
-        {/* Auth section */}
+        {/* Footer: auth + feedback + nav */}
         <div style={{ padding: '12px 20px', borderTop: `1px solid ${border}` }}>
           {user ? (
             <div>
               <p style={{ fontSize: '12px', color: textMuted, marginBottom: '8px' }}>
-                Signed in as <strong style={{ color: textPrimary }}>{user.email}</strong>
+                {t.sidebar.signedInAs} <strong style={{ color: textPrimary }}>{user.email}</strong>
               </p>
               <div style={{ marginBottom: '8px' }}>
                 <button onClick={async () => { await signOut(); setUser(null); }}
                   style={{ width: '100%', padding: '8px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
-                  Sign out
+                  {t.sidebar.signOut}
                 </button>
               </div>
             </div>
           ) : (
             <button onClick={() => navigate('/auth')}
               style={{ width: '100%', padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', marginBottom: '8px' }}>
-              Sign in / Create account
+              {t.sidebar.signIn}
             </button>
           )}
+          <button onClick={openFeedback}
+            style={{ width: '100%', padding: '8px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit', marginBottom: '8px' }}>
+            {t.sidebar.feedback}
+          </button>
           <button onClick={() => navigate('/')}
             style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
-            ← All Psalms
+            {t.sidebar.allPsalms}
           </button>
         </div>
       </div>
+
+      {/* Feedback modal */}
+      {feedbackOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '380px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+            {!feedbackSent ? (
+              <>
+                <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '16px', color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>{t.feedback.title}</h3>
+                <textarea value={feedbackMessage} onChange={e => setFeedbackMessage(e.target.value)}
+                  placeholder={t.feedback.messagePlaceholder} rows={4}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "'Lora', Georgia, serif", boxSizing: 'border-box' as const, resize: 'none', outline: 'none', marginBottom: '10px' }} />
+                <input type="email" value={feedbackEmail} onChange={e => setFeedbackEmail(e.target.value)}
+                  placeholder={t.feedback.emailPlaceholder}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "'Lora', Georgia, serif", boxSizing: 'border-box' as const, outline: 'none', marginBottom: '14px' }} />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={handleFeedback} disabled={feedbackSending || !feedbackMessage.trim()}
+                    style={{ flex: 1, padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: feedbackSending || !feedbackMessage.trim() ? 'default' : 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', opacity: feedbackSending || !feedbackMessage.trim() ? 0.6 : 1 }}>
+                    {feedbackSending ? t.feedback.sending : t.feedback.send}
+                  </button>
+                  <button onClick={closeFeedback}
+                    style={{ padding: '10px 14px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
+                    {t.feedback.close}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: '16px', color: textPrimary, marginBottom: '20px', textAlign: 'center', fontFamily: "'Lora', Georgia, serif" }}>✓ {t.feedback.success}</p>
+                <button onClick={closeFeedback}
+                  style={{ width: '100%', padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit' }}>
+                  {t.feedback.close}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

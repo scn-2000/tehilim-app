@@ -1,0 +1,67 @@
+{
+  "allPsalms": "← Tous les Psaumes",
+  "settings": {
+    "title": "Paramètres d'affichage",
+    "hebrew": "Hébreu",
+    "english": "Anglais",
+    "phonetics": "Phonétique",
+    "fontSize": "Taille de police",
+    "small": "Petite",
+    "medium": "Moyenne",
+    "large": "Grande",
+    "darkMode": "Mode sombre",
+    "highContrast": "Contraste élevé",
+    "accessibility": "Pour l'accessibilité visuelle",
+    "language": "Langue"
+  },
+  "psalm": {
+    "loading": "Chargement...",
+    "title": "Psaume"
+  },
+  "share": {
+    "link": "Partager le lien",
+    "text": "Partager avec le texte"
+  },
+  "save": {
+    "to": "Enregistrer dans",
+    "bookmarks": "Favoris",
+    "newList": "Nouvelle liste"
+  },
+  "sidebar": {
+    "title": "TehilimForAll",
+    "bookmarksTab": "Favoris",
+    "listsTab": "Listes",
+    "collectiveTab": "Collectif",
+    "noBookmarks": "Aucun favori pour l'instant.",
+    "myLists": "Mes Listes",
+    "newList": "Nouvelle Liste",
+    "newListTitle": "Nouvelle Liste",
+    "noLists": "Aucune liste. Créez-en une !",
+    "listNamePlaceholder": "Nom de la liste...",
+    "descPlaceholder": "Description (facultative)...",
+    "create": "Créer",
+    "cancel": "Annuler",
+    "psalms": "psaumes",
+    "psalm": "psaume",
+    "collectiveReading": "Lecture Collective",
+    "new": "Nouveau",
+    "noCollectives": "Aucune lecture collective.",
+    "collectiveTagline": "Lisez ensemble les 150 psaumes.",
+    "signedInAs": "Connecté en tant que",
+    "signOut": "Se déconnecter",
+    "signIn": "Se connecter / Créer un compte",
+    "allPsalms": "← Tous les Psaumes",
+    "feedback": "Envoyer un commentaire",
+    "remove": "Retirer",
+    "addPsalm": "Ajouter Psaume"
+  },
+  "feedback": {
+    "title": "Envoyer un commentaire",
+    "messagePlaceholder": "Votre message...",
+    "emailPlaceholder": "Votre email (facultatif)",
+    "send": "Envoyer",
+    "sending": "Envoi...",
+    "success": "Merci pour votre commentaire !",
+    "close": "Fermer"
+  }
+}

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Logo from '../../components/Logo';
 import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, PsalmList } from '../../lib/lists';
 import { getUser, addBookmarkToCloud, removeBookmarkFromCloud } from '../../lib/auth';
+import { useTranslations, LOCALES } from '../../lib/i18n';
 
 function stripHtml(html: string): string {
   return html
@@ -179,6 +180,7 @@ export default function PsalmPage() {
   const [fontSize, setFontSize] = usePersistentState('pref_fontsize', 'medium');
   const [darkMode, setDarkMode] = usePersistentState('pref_darkmode', false);
   const [highContrast, setHighContrast] = usePersistentState('pref_highcontrast', false);
+  const { t, locale, setLocale } = useTranslations();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
@@ -381,9 +383,9 @@ export default function PsalmPage() {
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
           {sidebarTab === 'bookmarks' && (
             <>
-              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Bookmarks</p>
+              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>{t.sidebar.bookmarksTab}</p>
               {bookmarks.length === 0 ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No bookmarks yet.</p>
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>{t.sidebar.noBookmarks}</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {bookmarks.sort((a, b) => a - b).map(num => (
@@ -400,37 +402,37 @@ export default function PsalmPage() {
           {sidebarTab === 'lists' && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>My Lists</p>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.sidebar.myLists}</p>
                 <button onClick={() => setCreatingList(true)}
                   style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <IconPlus /> New List
+                  <IconPlus /> {t.sidebar.newList}
                 </button>
               </div>
 
               {creatingList && (
                 <div style={{ background: darkMode ? '#3a2510' : '#fef9f0', border: `1px solid ${border}`, borderRadius: '10px', padding: '14px', marginBottom: '12px' }}>
-                  <p style={{ fontSize: '13px', color: textPrimary, marginBottom: '8px', fontWeight: '500' }}>New List</p>
+                  <p style={{ fontSize: '13px', color: textPrimary, marginBottom: '8px', fontWeight: '500' }}>{t.sidebar.newListTitle}</p>
                   <input value={newListName} onChange={e => setNewListName(e.target.value)}
-                    placeholder="List name..." onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
+                    placeholder={t.sidebar.listNamePlaceholder} onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none' }} />
                   <textarea value={newListDesc} onChange={e => setNewListDesc(e.target.value)}
-                    placeholder="Description (optional)..." rows={2}
+                    placeholder={t.sidebar.descPlaceholder} rows={2}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none', resize: 'none' }} />
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button onClick={handleCreateList}
                       style={{ flex: 1, padding: '7px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
-                      Create
+                      {t.sidebar.create}
                     </button>
                     <button onClick={() => { setCreatingList(false); setNewListName(''); setNewListDesc(''); }}
                       style={{ flex: 1, padding: '7px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
-                      Cancel
+                      {t.sidebar.cancel}
                     </button>
                   </div>
                 </div>
               )}
 
               {lists.length === 0 && !creatingList ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>No lists yet. Create one!</p>
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>{t.sidebar.noLists}</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {lists.map(list => (
@@ -440,14 +442,14 @@ export default function PsalmPage() {
                         <div>
                           <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px', fontFamily: 'inherit' }}>{list.name}</p>
                           {list.description && <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic', marginBottom: '2px', fontFamily: 'inherit' }}>{list.description}</p>}
-                          <p style={{ fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>{list.psalms.length} psalm{list.psalms.length !== 1 ? 's' : ''}</p>
+                          <p style={{ fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>{list.psalms.length} {list.psalms.length !== 1 ? t.sidebar.psalms : t.sidebar.psalm}</p>
                         </div>
                         <span style={{ color: textMuted, fontSize: '16px' }}>›</span>
                       </button>
                       <div style={{ borderTop: `1px solid ${border}`, padding: '8px 14px', background: darkMode ? '#2a1a0a' : '#faf4ea', display: 'flex', gap: '6px' }}>
                         <button onClick={() => handleToggleInList(list.id)}
                           style={{ flex: 1, padding: '6px', background: list.psalms.includes(psalmNum) ? 'none' : goldAccent, border: `1px solid ${list.psalms.includes(psalmNum) ? border : goldAccent}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: list.psalms.includes(psalmNum) ? textMuted : 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                          {list.psalms.includes(psalmNum) ? <><IconCheck /> Remove</> : <><IconPlus /> Add Psalm {psalmNum}</>}
+                          {list.psalms.includes(psalmNum) ? <><IconCheck /> {t.sidebar.remove}</> : <><IconPlus /> {t.sidebar.addPsalm} {psalmNum}</>}
                         </button>
                         <button onClick={() => handleShareList(list)}
                           style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
@@ -467,15 +469,15 @@ export default function PsalmPage() {
         {sidebarTab === 'collective' && (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Collective Reading</p>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.sidebar.collectiveReading}</p>
                 <button onClick={() => { router.push('/collective/new'); setSidebarOpen(false); }}
                   style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <IconPlus /> New
+                  <IconPlus /> {t.sidebar.new}
                 </button>
               </div>
 
               {myCollectives.length === 0 ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic', marginBottom: '16px' }}>No collective readings yet.</p>
+                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic', marginBottom: '16px' }}>{t.sidebar.noCollectives}</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                   {myCollectives.map((c: {id: string; name: string; role: string}) => (
@@ -501,7 +503,7 @@ export default function PsalmPage() {
         <div style={{ padding: '16px 20px', borderTop: `1px solid ${border}` }}>
           <button onClick={() => { router.push('/'); setSidebarOpen(false); }}
             style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
-            ← All Psalms
+            {t.sidebar.allPsalms}
           </button>
         </div>
       </div>
@@ -519,7 +521,7 @@ export default function PsalmPage() {
             {!isMobile && (
               <button onClick={() => router.push('/')}
                 style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-                ← All Psalms
+                {t.allPsalms}
               </button>
             )}
           </div>
@@ -533,14 +535,14 @@ export default function PsalmPage() {
               </button>
               {saveOpen && (
                 <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '240px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
-                  <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 10px 8px' }}>Save to</p>
+                  <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 10px 8px' }}>{t.save.to}</p>
 
                   {/* Bookmarks */}
                   <button onClick={() => { toggleBookmark(); setSaveOpen(false); }}
                     style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <IconBookmark filled={isBookmarked} />
-                      <span>Bookmarks</span>
+                      <span>{t.save.bookmarks}</span>
                     </div>
                     {isBookmarked && <span style={{ color: goldAccent }}><IconCheck /></span>}
                   </button>
@@ -559,7 +561,7 @@ export default function PsalmPage() {
                   <div style={{ height: '1px', background: border, margin: '4px 8px' }} />
                   <button onClick={() => { setSidebarOpen(true); setSidebarTab('lists'); setCreatingList(true); setSaveOpen(false); }}
                     style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: goldAccent, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <IconPlus /> New list
+                    <IconPlus /> {t.save.newList}
                   </button>
                 </div>
               )}
@@ -574,11 +576,11 @@ export default function PsalmPage() {
                 <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '190px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
                   <button onClick={() => { handleShare('link'); setShareOpen(false); }}
                     style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <IconLink /> Share link
+                    <IconLink /> {t.share.link}
                   </button>
                   <button onClick={() => { handleShare('text'); setShareOpen(false); }}
                     style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <IconCopy /> Share with text
+                    <IconCopy /> {t.share.text}
                   </button>
                 </div>
               )}
@@ -591,11 +593,11 @@ export default function PsalmPage() {
               </button>
               {settingsOpen && (
                 <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '20px', width: '260px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
-                  <p style={{ fontSize: '13px', fontWeight: '600', color: textMuted, marginBottom: '16px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Display Settings</p>
+                  <p style={{ fontSize: '13px', fontWeight: '600', color: textMuted, marginBottom: '16px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t.settings.title}</p>
                   {[
-                    { label: 'Hebrew', value: showHebrew, set: setShowHebrew },
-                    { label: 'English', value: showEnglish, set: setShowEnglish },
-                    { label: 'Phonetics', value: showPhonetics, set: setShowPhonetics },
+                    { label: t.settings.hebrew, value: showHebrew, set: setShowHebrew },
+                    { label: t.settings.english, value: showEnglish, set: setShowEnglish },
+                    { label: t.settings.phonetics, value: showPhonetics, set: setShowPhonetics },
                   ].map(({ label, value, set }) => (
                     <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                       <span style={{ fontSize: '15px', color: textPrimary }}>{label}</span>
@@ -605,29 +607,39 @@ export default function PsalmPage() {
                     </div>
                   ))}
                   <div style={{ borderTop: `1px solid ${border}`, margin: '16px 0' }} />
-                  <p style={{ fontSize: '13px', color: textMuted, marginBottom: '10px' }}>Font Size</p>
+                  <p style={{ fontSize: '13px', color: textMuted, marginBottom: '10px' }}>{t.settings.fontSize}</p>
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                    {['small', 'medium', 'large'].map(size => (
+                    {(['small', 'medium', 'large'] as const).map(size => (
                       <button key={size} onClick={() => setFontSize(size)}
                         style={{ flex: 1, padding: '6px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', border: `1px solid ${fontSize === size ? goldAccent : border}`, background: fontSize === size ? goldAccent : 'transparent', color: fontSize === size ? 'white' : textPrimary }}>
-                        {size.charAt(0).toUpperCase() + size.slice(1)}
+                        {{ small: t.settings.small, medium: t.settings.medium, large: t.settings.large }[size]}
                       </button>
                     ))}
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <span style={{ fontSize: '15px', color: textPrimary }}>Dark Mode</span>
+                    <span style={{ fontSize: '15px', color: textPrimary }}>{t.settings.darkMode}</span>
                     <button style={settingToggle(darkMode)} onClick={() => { setDarkMode(!darkMode); if (!darkMode) setHighContrast(false); }}>
                       <div style={toggleKnob} />
                     </button>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                     <div>
-                      <span style={{ fontSize: '15px', color: textPrimary }}>High Contrast</span>
-                      <p style={{ fontSize: '11px', color: textMuted, marginTop: '2px' }}>For visual accessibility</p>
+                      <span style={{ fontSize: '15px', color: textPrimary }}>{t.settings.highContrast}</span>
+                      <p style={{ fontSize: '11px', color: textMuted, marginTop: '2px' }}>{t.settings.accessibility}</p>
                     </div>
                     <button style={settingToggle(highContrast)} onClick={() => { setHighContrast(!highContrast); if (!highContrast) setDarkMode(false); }}>
                       <div style={toggleKnob} />
                     </button>
+                  </div>
+                  <div style={{ borderTop: `1px solid ${border}`, marginBottom: '14px' }} />
+                  <p style={{ fontSize: '13px', color: textMuted, marginBottom: '10px' }}>{t.settings.language}</p>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' as const }}>
+                    {LOCALES.map(({ value, label }) => (
+                      <button key={value} onClick={() => setLocale(value)}
+                        style={{ padding: '5px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', border: `1px solid ${locale === value ? goldAccent : border}`, background: locale === value ? goldAccent : 'transparent', color: locale === value ? 'white' : textPrimary }}>
+                        {label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -644,7 +656,7 @@ export default function PsalmPage() {
           <div ref={dropdownRef} style={{ position: 'relative' }}>
             <button onClick={() => setPsalmDropdownOpen(!psalmDropdownOpen)}
               style={{ background: surface, border: `1px solid ${goldAccent}`, borderRadius: '8px', padding: '8px 20px', cursor: 'pointer', color: textPrimary, fontSize: '15px', fontFamily: 'inherit', fontWeight: '500', minWidth: isMobile ? '160px' : '180px', textAlign: 'center' }}>
-              Psalm {psalmNum} ▾
+              {t.psalm.title} {psalmNum} ▾
             </button>
             {psalmDropdownOpen && (
               <div style={{ position: 'absolute', top: '44px', left: '50%', transform: 'translateX(-50%)', background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: isMobile ? '280px' : '300px', maxHeight: '320px', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
@@ -669,14 +681,14 @@ export default function PsalmPage() {
       {/* Psalm title */}
       <div style={{ textAlign: 'center', padding: isMobile ? '28px 16px 16px' : '40px 24px 24px' }}>
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>תהילים</p>
-        <h1 style={{ fontSize: isMobile ? '28px' : '36px', fontWeight: '400', color: textPrimary }}>Psalm {psalmNum}</h1>
+        <h1 style={{ fontSize: isMobile ? '28px' : '36px', fontWeight: '400', color: textPrimary }}>{t.psalm.title} {psalmNum}</h1>
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '12px auto 0' }} />
       </div>
 
       {/* Verses */}
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: isMobile ? '0 16px 60px' : '0 24px 80px' }}>
         {hebrew.length === 0 ? (
-          <p style={{ textAlign: 'center', color: textMuted, padding: '60px 0' }}>Loading...</p>
+          <p style={{ textAlign: 'center', color: textMuted, padding: '60px 0' }}>{t.psalm.loading}</p>
         ) : (
           hebrew.map((verse, i) => (
             <div key={i} style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: highContrast ? `2px solid #000000` : `1px solid ${border}` }}>
