@@ -154,7 +154,9 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Logo size={28} />
+            <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <Logo size={28} />
+            </button>
             <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>TehilimForAll</span>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>

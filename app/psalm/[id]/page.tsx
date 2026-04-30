@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Logo from '../../components/Logo';
 import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, PsalmList } from '../../lib/lists';
+import { getUser, addBookmarkToCloud, removeBookmarkFromCloud } from '../../lib/auth';
 
 function stripHtml(html: string): string {
   return html
@@ -192,6 +193,7 @@ export default function PsalmPage() {
   const [newListName, setNewListName] = useState('');
   const [newListDesc, setNewListDesc] = useState('');
   const [myCollectives, setMyCollectives] = useState<{id: string; name: string; role: string}[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -225,6 +227,7 @@ export default function PsalmPage() {
     setBookmarks(bm);
     setLists(getLists());
     setMyCollectives(JSON.parse(localStorage.getItem('my_collectives') || '[]'));
+    getUser().then(u => setUserId(u?.id ?? null));
   }, [id]);
 
   useEffect(() => {
@@ -240,10 +243,15 @@ export default function PsalmPage() {
 
   function toggleBookmark() {
     const arr = getSet('bookmarks');
-    const updated = arr.includes(psalmNum) ? arr.filter(n => n !== psalmNum) : [...arr, psalmNum];
+    const adding = !arr.includes(psalmNum);
+    const updated = adding ? [...arr, psalmNum] : arr.filter(n => n !== psalmNum);
     saveSet('bookmarks', updated);
-    setIsBookmarked(!isBookmarked);
+    setIsBookmarked(adding);
     setBookmarks(updated);
+    if (userId) {
+      if (adding) addBookmarkToCloud(userId, psalmNum);
+      else removeBookmarkFromCloud(userId, psalmNum);
+    }
   }
 
   function handleCreateList() {
@@ -344,14 +352,16 @@ export default function PsalmPage() {
 
       {/* Sidebar */}
       <div style={{
-        position: 'fixed', top: 0, left: 0, height: '100vh', width: '300px',
+        position: 'fixed', top: 0, left: 0, height: '100vh', width: 'min(300px, 85vw)',
         background: surface, borderRight: `1px solid ${border}`,
         zIndex: 400, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
         transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Logo size={28} />
+            <button onClick={() => { router.push('/'); setSidebarOpen(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <Logo size={28} />
+            </button>
             <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>TehilimForAll</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
