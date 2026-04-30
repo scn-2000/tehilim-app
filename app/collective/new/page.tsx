@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import Logo from '../../components/Logo';
+import Sidebar from '../../components/Sidebar';
 
 export default function NewCollectiveReadingPage() {
   const router = useRouter();
@@ -14,9 +15,9 @@ export default function NewCollectiveReadingPage() {
   const [endDate, setEndDate] = useState('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const bg = '#fdf6ec';
-  const surface = '#fff8ee';
   const border = '#e8d5b5';
   const textPrimary = '#2c1810';
   const textMuted = '#9a7a5a';
@@ -49,17 +50,25 @@ export default function NewCollectiveReadingPage() {
       .single();
     if (err) { setError('Something went wrong. Please try again.'); setCreating(false); return; }
     if (data) {
-      // Save to my collectives
       const mine = JSON.parse(localStorage.getItem('my_collectives') || '[]');
       mine.push({ id, name: name.trim(), role: 'creator' });
       localStorage.setItem('my_collectives', JSON.stringify(mine));
-      router.push(`/collective/${id}`);
+      router.replace(`/collective/${id}`);
     }
   }
 
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Lora', Georgia, serif", color: textPrimary }}>
-      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
+
+      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 100 }}>
+        <button onClick={() => setSidebarOpen(true)}
+          style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
         <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <Logo size={28} />
         </button>
