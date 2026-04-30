@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import Logo from '../../components/Logo';
 import Sidebar from '../../components/Sidebar';
+import LanguageSelector from '../../components/LanguageSelector';
 
 interface Claim {
   psalmNum: number;
@@ -223,6 +224,7 @@ export default function CollectiveReadingPage() {
           </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LanguageSelector />
           {justSaved && <span style={{ fontSize: '13px', color: englishColor, fontStyle: 'italic' }}>✓ Saved</span>}
           {savedName && <span style={{ fontSize: '13px', color: textMuted }}>Reading as <strong style={{ color: textPrimary }}>{savedName}</strong></span>}
           <button onClick={handleShare}

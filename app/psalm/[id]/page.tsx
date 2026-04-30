@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Logo from '../../components/Logo';
 import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, PsalmList } from '../../lib/lists';
 import { getUser, addBookmarkToCloud, removeBookmarkFromCloud } from '../../lib/auth';
-import { useTranslations, LOCALES } from '../../lib/i18n';
+import { useTranslations } from '../../lib/i18n';
+import LanguageSelector from '../../components/LanguageSelector';
 
 function stripHtml(html: string): string {
   return html
@@ -180,7 +181,7 @@ export default function PsalmPage() {
   const [fontSize, setFontSize] = usePersistentState('pref_fontsize', 'medium');
   const [darkMode, setDarkMode] = usePersistentState('pref_darkmode', false);
   const [highContrast, setHighContrast] = usePersistentState('pref_highcontrast', false);
-  const { t, locale, setLocale } = useTranslations();
+  const { t } = useTranslations();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
@@ -528,6 +529,8 @@ export default function PsalmPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
 
+            <LanguageSelector border={border} surface={surface} textPrimary={textPrimary} textMuted={textMuted} />
+
             {/* Save/Bookmark dropdown */}
             <div ref={saveRef} style={{ position: 'relative' }}>
               <button onClick={() => setSaveOpen(!saveOpen)} style={hdrBtn(isBookmarked, goldAccent)} title="Save">
@@ -630,16 +633,6 @@ export default function PsalmPage() {
                     <button style={settingToggle(highContrast)} onClick={() => { setHighContrast(!highContrast); if (!highContrast) setDarkMode(false); }}>
                       <div style={toggleKnob} />
                     </button>
-                  </div>
-                  <div style={{ borderTop: `1px solid ${border}`, marginBottom: '14px' }} />
-                  <p style={{ fontSize: '13px', color: textMuted, marginBottom: '10px' }}>{t.settings.language}</p>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' as const }}>
-                    {LOCALES.map(({ value, label }) => (
-                      <button key={value} onClick={() => setLocale(value)}
-                        style={{ padding: '5px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', border: `1px solid ${locale === value ? goldAccent : border}`, background: locale === value ? goldAccent : 'transparent', color: locale === value ? 'white' : textPrimary }}>
-                        {label}
-                      </button>
-                    ))}
                   </div>
                 </div>
               )}

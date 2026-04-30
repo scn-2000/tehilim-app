@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 import Logo from '../components/Logo';
+import LanguageSelector from '../components/LanguageSelector';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -71,6 +72,9 @@ export default function AuthPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Lora', Georgia, serif", color: textPrimary, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ position: 'fixed', top: '16px', right: '24px', zIndex: 100 }}>
+        <LanguageSelector />
+      </div>
 
       <div style={{ marginBottom: '32px', textAlign: 'center' }}>
         <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginBottom: '16px' }}>
