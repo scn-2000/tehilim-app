@@ -99,8 +99,8 @@ export default function PsalmPage() {
   const [isMobile, setIsMobile] = useState(false);
 
   const [showHebrew, setShowHebrew] = usePersistentState('pref_hebrew', true);
-  const [showEnglish, setShowEnglish] = usePersistentState('pref_english', true);
-  const [showPhonetics, setShowPhonetics] = usePersistentState('pref_phonetics', false);
+  const [showEnglish, setShowEnglish] = usePersistentState('pref_english', false);
+  const [showPhonetics, setShowPhonetics] = usePersistentState('pref_phonetics', true);
   const [fontSize, setFontSize] = usePersistentState('pref_fontsize', 'medium');
   const [darkMode, setDarkMode] = usePersistentState('pref_darkmode', false);
   const [highContrast, setHighContrast] = usePersistentState('pref_highcontrast', false);

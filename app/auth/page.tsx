@@ -159,7 +159,7 @@ export default function AuthPage() {
         </button>
 
         <button onClick={() => router.push('/')}
-          style={{ width: '100%', padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: textMuted, fontFamily: 'inherit', marginTop: '12px' }}>
+          style={{ width: '100%', padding: '11px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', marginTop: '12px' }}>
           Continue without account
         </button>
       </div>

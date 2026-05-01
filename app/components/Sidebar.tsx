@@ -211,13 +211,13 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: `1px solid ${border}` }}>
           {([
-            ['bookmarks', t.sidebar.bookmarksTab],
-            ['lists', t.sidebar.listsTab],
-            ['collective', t.sidebar.collectiveTab],
-            ['categories', t.categories.tab],
-          ] as const).map(([tab, label]) => (
-            <button key={tab} onClick={() => setSidebarTab(tab)}
-              style={{ flex: 1, padding: '10px 3px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '11px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            { key: 'bookmarks' as const, label: t.sidebar.bookmarksTab },
+            { key: 'lists' as const, label: t.sidebar.listsTab },
+            { key: 'collective' as const, label: t.sidebar.collectiveTab },
+            { key: 'categories' as const, label: t.categories?.tab ?? 'Categories' },
+          ]).map(({ key, label }) => (
+            <button key={key} onClick={() => setSidebarTab(key)}
+              style={{ flex: 1, padding: '10px 3px', background: 'none', border: 'none', borderBottom: sidebarTab === key ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '11px', fontWeight: sidebarTab === key ? '600' : '400', color: sidebarTab === key ? textPrimary : textMuted, fontFamily: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {label}
             </button>
           ))}
@@ -344,24 +344,24 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
           {sidebarTab === 'categories' && (
             <>
               {/* Psalm of the Day banner */}
-              <div style={{ background: goldAccent, borderRadius: '10px', padding: '14px 16px', marginBottom: '12px' }}>
+              <div style={{ background: goldAccent, borderRadius: '10px', padding: '14px 16px', marginBottom: '16px' }}>
                 <p style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
                   {t.categories.psalmOfTheDay}
                 </p>
                 <p style={{ fontSize: '18px', fontWeight: '500', color: 'white', marginBottom: '2px' }}>
                   {t.psalm.title} {psalmOfDay}
                 </p>
-                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', marginBottom: '12px' }}>
+                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.85)', marginBottom: '10px' }}>
                   {dayName}
+                </p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6', marginBottom: '14px' }}>
+                  {t.categories.psalmOfTheDayExplain}
                 </p>
                 <button onClick={() => navigate(`/psalm/${psalmOfDay}`)}
                   style={{ background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '7px', padding: '7px 14px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit', fontWeight: '500' }}>
                   {t.categories.readNow}
                 </button>
               </div>
-              <p style={{ fontSize: '12px', color: textMuted, lineHeight: '1.6', marginBottom: '16px', padding: '0 4px' }}>
-                {t.categories.psalmOfTheDayExplain}
-              </p>
 
               {/* Category list */}
               <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
@@ -402,8 +402,8 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
             </div>
           ) : (
             <button onClick={() => navigate('/auth')}
-              style={{ width: '100%', padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', marginBottom: '8px' }}>
-              {t.sidebar.signIn}
+              style={{ width: '100%', padding: '6px 0', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit', marginBottom: '8px', textAlign: 'left' as const }}>
+              {t.sidebar.signIn} →
             </button>
           )}
           <button onClick={openFeedback}
