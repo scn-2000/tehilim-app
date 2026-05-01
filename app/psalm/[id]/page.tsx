@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Logo from '../../components/Logo';
+import { getCategoryBySlug } from '../../lib/categories';
 import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, PsalmList } from '../../lib/lists';
 import { getUser, addBookmarkToCloud, removeBookmarkFromCloud } from '../../lib/auth';
 import { useTranslations } from '../../lib/i18n';
@@ -198,11 +199,18 @@ export default function PsalmPage() {
   const [myCollectives, setMyCollectives] = useState<{id: string; name: string; role: string}[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
   const settingsRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
   const saveRef = useRef<HTMLDivElement>(null);
   const psalmNum = Number(id);
+
+  const categorySlug = searchParams.get('category');
+  const categoryData = categorySlug ? getCategoryBySlug(categorySlug) : null;
+  const categoryIndex = categoryData ? categoryData.psalms.indexOf(psalmNum) : -1;
+  const prevCategoryPsalm = categoryData && categoryIndex > 0 ? categoryData.psalms[categoryIndex - 1] : null;
+  const nextCategoryPsalm = categoryData && categoryIndex !== -1 && categoryIndex < categoryData.psalms.length - 1 ? categoryData.psalms[categoryIndex + 1] : null;
 
   const fontSizeMap: Record<string, { hebrew: string; english: string }> = {
     small:  { hebrew: highContrast ? '22px' : '18px', english: highContrast ? '15px' : '13px' },
@@ -670,6 +678,35 @@ export default function PsalmPage() {
           </button>
         </div>
       </div>
+
+      {/* Category navigation bar */}
+      {categorySlug && categoryData && (
+        <div style={{ padding: isMobile ? '8px 12px' : '8px 24px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', background: surface }}>
+          <button onClick={() => router.push(`/category/${categorySlug}`)}
+            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontFamily: 'inherit', fontSize: '13px', maxWidth: isMobile ? '140px' : '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            ← {categoryData.title}
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              onClick={() => prevCategoryPsalm && router.push(`/psalm/${prevCategoryPsalm}?category=${categorySlug}`)}
+              disabled={!prevCategoryPsalm}
+              style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: prevCategoryPsalm ? 'pointer' : 'default', color: prevCategoryPsalm ? textPrimary : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: prevCategoryPsalm ? 1 : 0.4 }}>
+              ← Prev
+            </button>
+            {categoryIndex >= 0 && (
+              <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap' }}>
+                {categoryIndex + 1} / {categoryData.psalms.length}
+              </span>
+            )}
+            <button
+              onClick={() => nextCategoryPsalm && router.push(`/psalm/${nextCategoryPsalm}?category=${categorySlug}`)}
+              disabled={!nextCategoryPsalm}
+              style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: nextCategoryPsalm ? 'pointer' : 'default', color: nextCategoryPsalm ? textPrimary : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: nextCategoryPsalm ? 1 : 0.4 }}>
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Psalm title */}
       <div style={{ textAlign: 'center', padding: isMobile ? '28px 16px 16px' : '40px 24px 24px' }}>

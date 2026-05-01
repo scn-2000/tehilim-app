@@ -7,6 +7,7 @@ import { getLists, createList, deleteList, PsalmList, encodeListForSharing } fro
 import { supabase } from '../lib/supabase';
 import { getUser, signOut, syncBookmarksToCloud, loadBookmarksFromCloud, syncListsToCloud, loadListsFromCloud } from '../lib/auth';
 import { useTranslations } from '../lib/i18n';
+import { categories, PSALM_OF_THE_DAY, DAY_NAMES } from '../lib/categories';
 
 const IconClose = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -35,7 +36,7 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: SidebarProps) {
   const router = useRouter();
   const { t } = useTranslations();
-  const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists' | 'collective'>('bookmarks');
+  const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists' | 'collective' | 'categories'>('bookmarks');
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [lists, setLists] = useState<PsalmList[]>([]);
   const [myCollectives, setMyCollectives] = useState<{id: string; name: string; role: string}[]>([]);
@@ -57,6 +58,10 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   const textPrimary = darkMode ? '#f5e9d4' : '#2c1810';
   const textMuted = darkMode ? '#c9a96e' : '#9a7a5a';
   const goldAccent = '#c9a96e';
+
+  const today = new Date().getDay();
+  const psalmOfDay = PSALM_OF_THE_DAY[today];
+  const dayName = DAY_NAMES[today];
 
   useEffect(() => {
     getUser().then(u => {
@@ -209,9 +214,10 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
             ['bookmarks', t.sidebar.bookmarksTab],
             ['lists', t.sidebar.listsTab],
             ['collective', t.sidebar.collectiveTab],
+            ['categories', 'Categories'],
           ] as const).map(([tab, label]) => (
             <button key={tab} onClick={() => setSidebarTab(tab)}
-              style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '13px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit' }}>
+              style={{ flex: 1, padding: '10px 3px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '11px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {label}
             </button>
           ))}
@@ -332,6 +338,44 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
               <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic' }}>
                 {t.sidebar.collectiveTagline}
               </p>
+            </>
+          )}
+
+          {sidebarTab === 'categories' && (
+            <>
+              {/* Psalm of the Day banner */}
+              <div style={{ background: goldAccent, borderRadius: '10px', padding: '14px 16px', marginBottom: '16px' }}>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Psalm of the Day
+                </p>
+                <p style={{ fontSize: '18px', fontWeight: '500', color: 'white', marginBottom: '2px' }}>
+                  Psalm {psalmOfDay}
+                </p>
+                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)', marginBottom: '12px' }}>
+                  {dayName}
+                </p>
+                <button onClick={() => navigate(`/psalm/${psalmOfDay}`)}
+                  style={{ background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '7px', padding: '7px 14px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit', fontWeight: '500' }}>
+                  Read Now
+                </button>
+              </div>
+
+              {/* Category list */}
+              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                All Categories
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {categories.map(cat => (
+                  <button key={cat.slug} onClick={() => navigate(`/category/${cat.slug}`)}
+                    style={{ width: '100%', padding: '11px 14px', background: 'transparent', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: '13px', color: textPrimary, fontWeight: '500', marginBottom: '2px', fontFamily: 'inherit' }}>{cat.title}</p>
+                      <p style={{ fontSize: '11px', color: textMuted, fontFamily: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.description}</p>
+                    </div>
+                    <span style={{ color: textMuted, fontSize: '16px', flexShrink: 0 }}>›</span>
+                  </button>
+                ))}
+              </div>
             </>
           )}
         </div>
