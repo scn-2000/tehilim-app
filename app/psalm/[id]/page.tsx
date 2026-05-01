@@ -18,84 +18,6 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-function translitSephardic(text: string): string {
-  if (!text) return '';
-  text = text.replace(/יְהוָה/g, 'ADONAI');
-  text = text.replace(/יהוה/g, 'ADONAI');
-  text = text.replace(/יְהֹוָה/g, 'ADONAI');
-  const nikud: Record<string, string> = {
-    '\u05B0': 'e', '\u05B1': 'e', '\u05B2': 'a', '\u05B3': 'o',
-    '\u05B4': 'i', '\u05B5': 'ê', '\u05B6': 'e', '\u05B7': 'a',
-    '\u05B8': 'a', '\u05B9': 'o', '\u05BA': 'o', '\u05BB': 'u',
-    '\u05BC': '', '\u05BD': '', '\u05BE': ' ', '\u05BF': '',
-    '\u05C0': '', '\u05C1': '', '\u05C2': '', '\u05C4': '',
-    '\u05C5': '', '\u05C7': 'o',
-  };
-  const letters: Record<string, string> = {
-    '\u05D0': '', '\u05D1': 'v', '\u05D2': 'g', '\u05D3': 'd',
-    '\u05D4': 'h', '\u05D5': 'v', '\u05D6': 'z', '\u05D7': 'ch',
-    '\u05D8': 't', '\u05D9': 'y', '\u05DA': 'ch', '\u05DB': 'ch',
-    '\u05DC': 'l', '\u05DD': 'm', '\u05DE': 'm', '\u05DF': 'n',
-    '\u05E0': 'n', '\u05E1': 's', '\u05E2': '', '\u05E3': 'f',
-    '\u05E4': 'f', '\u05E5': 'ts', '\u05E6': 'ts', '\u05E7': 'k',
-    '\u05E8': 'r', '\u05E9': 'sh', '\u05EA': 't',
-  };
-  const dageshMap: Record<string, string> = {
-    '\u05D1': 'b', '\u05DB': 'k', '\u05DA': 'k',
-    '\u05E4': 'p', '\u05E3': 'p', '\u05D3': 'd',
-    '\u05D2': 'g', '\u05D8': 't',
-  };
-  if (text.includes('ADONAI')) {
-    return text.split('ADONAI').map(part => translitSephardic(part)).join('Adonai')
-      .replace(/\s+/g, ' ').trim()
-      .replace(/(^|\s)([a-z])/g, (_, space, letter) => space + letter.toUpperCase());
-  }
-  let result = '';
-  let i = 0;
-  const chars = [...text];
-  while (i < chars.length) {
-    const ch = chars[i];
-    const next = chars[i + 1] || '';
-    if (ch === '\u05D5') {
-      if (next === '\u05B9' || next === '\u05BA') { result += 'o'; i += 2; continue; }
-      if (next === '\u05BC') { result += 'v'; i += 2; continue; }
-      if (next === '\u05BB') { result += 'u'; i += 2; continue; }
-      result += 'v'; i++; continue;
-    }
-    if (ch === '\u05E9') {
-      if (next === '\u05C2') { result += 's'; i += 2; continue; }
-      result += 'sh'; i++;
-      if (chars[i] === '\u05C1') i++;
-      while (i < chars.length && nikud.hasOwnProperty(chars[i])) { result += nikud[chars[i]]; i++; }
-      continue;
-    }
-    if (ch === '\u05D9') {
-      if (next === '\u05B4') { result += 'i'; i += 2; continue; }
-      if (next === '\u05B5') { result += 'ê'; i += 2; continue; }
-      result += 'y'; i++;
-      while (i < chars.length && nikud.hasOwnProperty(chars[i])) { result += nikud[chars[i]]; i++; }
-      continue;
-    }
-    if (letters.hasOwnProperty(ch)) {
-      let letterOut = letters[ch];
-      if (next === '\u05BC' && dageshMap.hasOwnProperty(ch)) { letterOut = dageshMap[ch]; i++; }
-      result += letterOut; i++;
-      while (i < chars.length && nikud.hasOwnProperty(chars[i])) { result += nikud[chars[i]]; i++; }
-      continue;
-    }
-    if (nikud.hasOwnProperty(ch)) { result += nikud[ch]; i++; continue; }
-    if (ch === ' ') { result += ' '; i++; continue; }
-    if (ch === '\u05BE') { result += ' '; i++; continue; }
-    if ([',', '.', '!', '?', ':'].includes(ch)) { result += ch; i++; continue; }
-    if (ch === '\u05C3' || ch === '\u05C0') { i++; continue; }
-    i++;
-  }
-  return result
-    .replace(/([aeiouê])\1+/g, '$1')
-    .replace(/yy/g, 'y')
-    .replace(/\s+/g, ' ').trim()
-    .replace(/(^|\s)([a-z])/g, (_, space, letter) => space + letter.toUpperCase());
-}
 
 function usePersistentState<T>(key: string, defaultValue: T) {
   const [state, setState] = useState<T>(defaultValue);
@@ -214,6 +136,14 @@ export default function PsalmPage() {
 
   const listId = searchParams.get('list');
   const [listNavData, setListNavData] = useState<{ name: string; psalms: number[] } | null>(null);
+  const [transliterations, setTransliterations] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    fetch('/transliterations.json')
+      .then(res => res.json())
+      .then(data => setTransliterations(data))
+      .catch(() => {});
+  }, []);
 
   const fontSizeMap: Record<string, { hebrew: string; english: string }> = {
     small:  { hebrew: highContrast ? '22px' : '18px', english: highContrast ? '15px' : '13px' },
@@ -771,9 +701,9 @@ export default function PsalmPage() {
                 <p dir="rtl" style={{ fontSize: fontSizeMap[fontSize].hebrew, fontFamily: "'Frank Ruhl Libre', serif", lineHeight: '2', marginBottom: '10px', color: hebrewColor }}
                   dangerouslySetInnerHTML={{ __html: verse }} />
               )}
-              {showPhonetics && (
+              {showPhonetics && !!transliterations[psalmNum.toString()]?.[i] && (
                 <p style={{ fontSize: fontSizeMap[fontSize].english, fontStyle: 'italic', marginBottom: '8px', color: phoneticsColor, lineHeight: '1.7' }}>
-                  {translitSephardic(stripHtml(verse))}
+                  {transliterations[psalmNum.toString()][i]}
                 </p>
               )}
               {showEnglish && (
