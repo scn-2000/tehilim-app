@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Logo from '../../components/Logo';
 import { getCategoryBySlug } from '../../lib/categories';
-import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, PsalmList } from '../../lib/lists';
+import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, decodeSharedList, PsalmList } from '../../lib/lists';
 import { getUser, addBookmarkToCloud, removeBookmarkFromCloud } from '../../lib/auth';
 import { useTranslations } from '../../lib/i18n';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -212,6 +212,9 @@ export default function PsalmPage() {
   const prevCategoryPsalm = categoryData && categoryIndex > 0 ? categoryData.psalms[categoryIndex - 1] : null;
   const nextCategoryPsalm = categoryData && categoryIndex !== -1 && categoryIndex < categoryData.psalms.length - 1 ? categoryData.psalms[categoryIndex + 1] : null;
 
+  const listId = searchParams.get('list');
+  const [listNavData, setListNavData] = useState<{ name: string; psalms: number[] } | null>(null);
+
   const fontSizeMap: Record<string, { hebrew: string; english: string }> = {
     small:  { hebrew: highContrast ? '22px' : '18px', english: highContrast ? '15px' : '13px' },
     medium: { hebrew: highContrast ? '28px' : isMobile ? '22px' : '26px', english: highContrast ? '17px' : isMobile ? '15px' : '16px' },
@@ -251,6 +254,14 @@ export default function PsalmPage() {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
+
+  useEffect(() => {
+    if (!listId) { setListNavData(null); return; }
+    const local = getLists().find(l => l.id === listId);
+    if (local) { setListNavData({ name: local.name, psalms: local.psalms }); return; }
+    const decoded = decodeSharedList(listId);
+    setListNavData(decoded ? { name: decoded.name, psalms: decoded.psalms } : null);
+  }, [listId]);
 
   function toggleBookmark() {
     const arr = getSet('bookmarks');
@@ -691,7 +702,7 @@ export default function PsalmPage() {
               onClick={() => prevCategoryPsalm && router.push(`/psalm/${prevCategoryPsalm}?category=${categorySlug}`)}
               disabled={!prevCategoryPsalm}
               style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: prevCategoryPsalm ? 'pointer' : 'default', color: prevCategoryPsalm ? textPrimary : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: prevCategoryPsalm ? 1 : 0.4 }}>
-              ← Prev
+              {t.categories.prevInCategory}
             </button>
             {categoryIndex >= 0 && (
               <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap' }}>
@@ -702,11 +713,45 @@ export default function PsalmPage() {
               onClick={() => nextCategoryPsalm && router.push(`/psalm/${nextCategoryPsalm}?category=${categorySlug}`)}
               disabled={!nextCategoryPsalm}
               style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: nextCategoryPsalm ? 'pointer' : 'default', color: nextCategoryPsalm ? textPrimary : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: nextCategoryPsalm ? 1 : 0.4 }}>
-              Next →
+              {t.categories.nextInCategory}
             </button>
           </div>
         </div>
       )}
+
+      {/* List navigation bar */}
+      {listId && listNavData && (() => {
+        const listIndex = listNavData.psalms.indexOf(psalmNum);
+        const prevListPsalm = listIndex > 0 ? listNavData.psalms[listIndex - 1] : null;
+        const nextListPsalm = listIndex !== -1 && listIndex < listNavData.psalms.length - 1 ? listNavData.psalms[listIndex + 1] : null;
+        return (
+          <div style={{ padding: isMobile ? '8px 12px' : '8px 24px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', background: surface }}>
+            <button onClick={() => router.push(`/list/${listId}`)}
+              style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontFamily: 'inherit', fontSize: '13px', maxWidth: isMobile ? '140px' : '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              ← {listNavData.name}
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={() => prevListPsalm && router.push(`/psalm/${prevListPsalm}?list=${listId}`)}
+                disabled={!prevListPsalm}
+                style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: prevListPsalm ? 'pointer' : 'default', color: prevListPsalm ? textPrimary : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: prevListPsalm ? 1 : 0.4 }}>
+                {t.categories.prevInList}
+              </button>
+              {listIndex >= 0 && (
+                <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap' }}>
+                  {listIndex + 1} / {listNavData.psalms.length}
+                </span>
+              )}
+              <button
+                onClick={() => nextListPsalm && router.push(`/psalm/${nextListPsalm}?list=${listId}`)}
+                disabled={!nextListPsalm}
+                style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: nextListPsalm ? 'pointer' : 'default', color: nextListPsalm ? textPrimary : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: nextListPsalm ? 1 : 0.4 }}>
+                {t.categories.nextInList}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Psalm title */}
       <div style={{ textAlign: 'center', padding: isMobile ? '28px 16px 16px' : '40px 24px 24px' }}>

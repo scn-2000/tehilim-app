@@ -63,5 +63,20 @@
     "sending": "Versturen...",
     "success": "Bedankt voor uw feedback!",
     "close": "Sluiten"
+  },
+  "categories": {
+    "tab": "Categorieën",
+    "psalmOfTheDay": "Psalm van de dag",
+    "psalmOfTheDayExplain": "Elke dag van de week heeft een aangewezen psalm (Shir Shel Yom), oorspronkelijk gezongen door de Levieten in de Heilige Tempel tijdens het ochtendoffer. Deze psalmen verbinden ons met de oude Tempeldienst en het ritme van de Schepping.",
+    "allCategories": "Alle categorieën",
+    "beforeReading": "Voor het lezen",
+    "beforeReadingNote": "Voor het lezen beginnen velen met een intentie-verklaring (L'shem yichud). Bij het lezen voor iemand anders, noem hun Hebreeuwse naam: [Naam] ben/bat [naam van de moeder]. Sluit af met een persoonlijk gebed in uw eigen woorden.",
+    "readNow": "Nu lezen",
+    "category": "Categorie",
+    "prevInCategory": "← Vorige in categorie",
+    "nextInCategory": "Volgende in categorie →",
+    "prevInList": "← Vorige in lijst",
+    "nextInList": "Volgende in lijst →",
+    "dayNames": ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"]
   }
 }

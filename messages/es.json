@@ -63,5 +63,20 @@
     "sending": "Enviando...",
     "success": "¡Gracias por tus comentarios!",
     "close": "Cerrar"
+  },
+  "categories": {
+    "tab": "Categorías",
+    "psalmOfTheDay": "Salmo del día",
+    "psalmOfTheDayExplain": "Cada día de la semana tiene un salmo designado (Shir Shel Yom), cantado originalmente por los Levitas en el Templo Sagrado durante el sacrificio de la mañana. Estos salmos nos conectan con el antiguo servicio del Templo y el ritmo de la Creación.",
+    "allCategories": "Todas las categorías",
+    "beforeReading": "Antes de leer",
+    "beforeReadingNote": "Antes de leer, muchos comienzan con una declaración de intención (L'shem yichud). Para leer en nombre de otra persona, mencione su nombre hebreo: [Nombre] ben/bat [nombre de la madre]. Concluya con una oración personal en sus propias palabras.",
+    "readNow": "Leer ahora",
+    "category": "Categoría",
+    "prevInCategory": "← Ant. en categoría",
+    "nextInCategory": "Sig. en categoría →",
+    "prevInList": "← Ant. en lista",
+    "nextInList": "Sig. en lista →",
+    "dayNames": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
   }
 }

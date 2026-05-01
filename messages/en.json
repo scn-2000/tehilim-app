@@ -63,5 +63,20 @@
     "sending": "Sending...",
     "success": "Thank you for your feedback!",
     "close": "Close"
+  },
+  "categories": {
+    "tab": "Categories",
+    "psalmOfTheDay": "Psalm of the Day",
+    "psalmOfTheDayExplain": "Each day of the week has a designated psalm (Shir Shel Yom), originally sung by the Levites in the Holy Temple during the morning sacrifice. These psalms connect us to the ancient Temple service and the rhythm of Creation.",
+    "allCategories": "All Categories",
+    "beforeReading": "Before Reading",
+    "beforeReadingNote": "Before reading, many begin with a declaration of intent (L'shem yichud). When reading for someone else, mention their Hebrew name: [Name] ben/bat [Mother's name]. Conclude with a personal prayer in your own words.",
+    "readNow": "Read Now",
+    "category": "Category",
+    "prevInCategory": "← Prev in category",
+    "nextInCategory": "Next in category →",
+    "prevInList": "← Prev in list",
+    "nextInList": "Next in list →",
+    "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   }
 }

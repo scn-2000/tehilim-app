@@ -5,9 +5,17 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 import Logo from '../components/Logo';
 import LanguageSelector from '../components/LanguageSelector';
+import Sidebar from '../components/Sidebar';
+
+const IconMenu = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
 
 export default function AuthPage() {
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -71,11 +79,23 @@ export default function AuthPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Lora', Georgia, serif", color: textPrimary, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ position: 'fixed', top: '16px', right: '24px', zIndex: 100 }}>
+    <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Lora', Georgia, serif", color: textPrimary, display: 'flex', flexDirection: 'column' }}>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
+
+      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button onClick={() => setSidebarOpen(true)}
+            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
+            <IconMenu />
+          </button>
+          <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <Logo size={28} />
+          </button>
+        </div>
         <LanguageSelector />
       </div>
 
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ marginBottom: '32px', textAlign: 'center' }}>
         <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginBottom: '16px' }}>
           <Logo size={56} />
@@ -142,6 +162,7 @@ export default function AuthPage() {
           style={{ width: '100%', padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', color: textMuted, fontFamily: 'inherit', marginTop: '12px' }}>
           Continue without account
         </button>
+      </div>
       </div>
     </div>
   );

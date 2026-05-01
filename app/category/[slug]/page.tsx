@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Logo from '../../components/Logo';
 import Sidebar from '../../components/Sidebar';
 import LanguageSelector from '../../components/LanguageSelector';
-import { getCategoryBySlug, Category, BEFORE_READING_NOTE } from '../../lib/categories';
+import { getCategoryBySlug, Category, getLocalizedCategory } from '../../lib/categories';
+import { useTranslations } from '../../lib/i18n';
 
 const IconMenu = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -16,6 +17,7 @@ const IconMenu = () => (
 export default function CategoryPage() {
   const { slug } = useParams();
   const router = useRouter();
+  const { t, locale } = useTranslations();
   const [category, setCategory] = useState<Category | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -37,6 +39,8 @@ export default function CategoryPage() {
     </div>
   );
 
+  const localized = getLocalizedCategory(category, locale);
+
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Lora', Georgia, serif", color: textPrimary }}>
 
@@ -53,7 +57,7 @@ export default function CategoryPage() {
           </button>
           <button onClick={() => router.back()}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-            Back
+            {t.allPsalms}
           </button>
         </div>
         <LanguageSelector />
@@ -61,27 +65,27 @@ export default function CategoryPage() {
 
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 24px' }}>
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>
-          Category
+          {t.categories.category}
         </p>
-        <h1 style={{ fontSize: '36px', fontWeight: '400', marginBottom: '8px' }}>{category.title}</h1>
-        <p style={{ fontSize: '16px', color: textMuted, marginBottom: '16px', fontStyle: 'italic' }}>{category.description}</p>
+        <h1 style={{ fontSize: '36px', fontWeight: '400', marginBottom: '8px' }}>{localized.title}</h1>
+        <p style={{ fontSize: '16px', color: textMuted, marginBottom: '16px', fontStyle: 'italic' }}>{localized.description}</p>
         <div style={{ width: '48px', height: '2px', background: goldAccent, marginBottom: '28px' }} />
 
         <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '10px', padding: '16px 18px', marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Before Reading</p>
-          <p style={{ fontSize: '14px', color: textPrimary, lineHeight: '1.75' }}>{BEFORE_READING_NOTE}</p>
+          <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>{t.categories.beforeReading}</p>
+          <p style={{ fontSize: '14px', color: textPrimary, lineHeight: '1.75' }}>{t.categories.beforeReadingNote}</p>
         </div>
 
         <p style={{ fontSize: '14px', color: textMuted, marginBottom: '16px' }}>
-          {category.psalms.length} psalm{category.psalms.length !== 1 ? 's' : ''}
+          {category.psalms.length} {category.psalms.length !== 1 ? t.sidebar.psalms : t.sidebar.psalm}
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {category.psalms.map(num => (
             <button key={num} onClick={() => router.push(`/psalm/${num}?category=${slug}`)}
               style={{ padding: '16px 18px', background: surface, border: `1px solid ${border}`, borderRadius: '10px', cursor: 'pointer', textAlign: 'left', fontSize: '15px', color: textPrimary, fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontWeight: '500' }}>Psalm {num}</span>
-              <span style={{ color: textMuted, fontSize: '13px' }}>Read</span>
+              <span style={{ fontWeight: '500' }}>{t.psalm.title} {num}</span>
+              <span style={{ color: textMuted, fontSize: '13px' }}>{t.categories.readNow}</span>
             </button>
           ))}
         </div>
