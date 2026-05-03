@@ -71,7 +71,13 @@ export async function loadListsFromCloud(userId: string) {
       .from('user_list_psalms')
       .select('psalm_num')
       .eq('list_id', list.id);
-    result.push({ ...list, psalms: psalms?.map(p => p.psalm_num) || [] });
+    result.push({
+      id: list.id,
+      name: list.name,
+      description: list.description || '',
+      psalms: psalms?.map((p: { psalm_num: number }) => p.psalm_num) || [],
+      createdAt: list.created_at ? new Date(list.created_at).getTime() : Date.now(),
+    });
   }
   return result;
 }

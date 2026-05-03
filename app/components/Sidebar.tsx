@@ -86,36 +86,48 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   }, [isOpen]);
 
   async function autoSync(userId: string) {
+    const localLists = getLists(); // snapshot before upload
     await syncBookmarksToCloud(userId);
     await syncListsToCloud(userId);
     const cloudBookmarks = await loadBookmarksFromCloud(userId);
     localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
     const cloudLists = await loadListsFromCloud(userId);
-    localStorage.setItem('psalm_lists', JSON.stringify(cloudLists));
+    // Merge: cloud wins for same id, keep local-only lists not yet in cloud
+    const cloudIds = new Set(cloudLists.map((l: { id: string }) => l.id));
+    const merged: PsalmList[] = [...cloudLists as PsalmList[], ...localLists.filter(l => !cloudIds.has(l.id))];
+    localStorage.setItem('psalm_lists', JSON.stringify(merged));
+    console.log('[Sidebar] autoSync: cloud:', cloudLists.length, 'local-only:', merged.length - cloudLists.length, 'total:', merged.length);
     setBookmarks(cloudBookmarks);
-    setLists(cloudLists as PsalmList[]);
+    setLists(merged);
   }
 
   async function handleSync() {
     if (!user) return;
     setSyncing(true);
+    const localLists = getLists();
     await syncBookmarksToCloud(user.id);
     await syncListsToCloud(user.id);
     const cloudBookmarks = await loadBookmarksFromCloud(user.id);
     localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
     const cloudLists = await loadListsFromCloud(user.id);
-    localStorage.setItem('psalm_lists', JSON.stringify(cloudLists));
+    const cloudIds = new Set(cloudLists.map((l: { id: string }) => l.id));
+    const merged: PsalmList[] = [...cloudLists as PsalmList[], ...localLists.filter(l => !cloudIds.has(l.id))];
+    localStorage.setItem('psalm_lists', JSON.stringify(merged));
     setBookmarks(cloudBookmarks);
-    setLists(cloudLists as PsalmList[]);
+    setLists(merged);
     setSyncing(false);
   }
 
   function handleCreateList() {
     if (!newListName.trim()) return;
     const newList = createList(newListName.trim(), newListDesc.trim());
+    // Immediately push to cloud so it survives the next autoSync
+    if (user) {
+      syncListsToCloud(user.id).catch(err => console.error('[Sidebar] cloud sync after create failed:', err));
+    }
     window.dispatchEvent(new Event('storage'));
     const saved = getLists();
-    console.log('[Sidebar] list created:', newList.name, '| total:', saved.length, '| raw:', localStorage.getItem('psalm_lists'));
+    console.log('[Sidebar] list created:', newList.id, newList.name, '| total in storage:', saved.length);
     setLists(saved);
     setNewListName('');
     setNewListDesc('');
