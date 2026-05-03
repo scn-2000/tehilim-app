@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "TehilimForAll — The Book of Psalms for Everyone",
     description:
       "Read all 150 Psalms in Hebrew, English, and phonetics. Free for everyone.",
@@ -40,7 +40,8 @@ const jsonLd = {
   "@type": "WebSite",
   name: "TehilimForAll",
   url: BASE_URL,
-  description: "Read all 150 Psalms in Hebrew, English, and phonetics. Free for everyone.",
+  description: "Read all 150 Psalms in Hebrew, English, and phonetics",
+  inLanguage: ["en", "fr", "es", "nl", "he"],
   potentialAction: {
     "@type": "SearchAction",
     target: {
