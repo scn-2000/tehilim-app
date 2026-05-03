@@ -75,8 +75,8 @@ export const categories: Category[] = [
   },
   {
     slug: 'travel',
-    title: 'For Travel (Tefillat HaDerech)',
-    description: 'Recited before embarking on a journey for protection and safe travel.',
+    title: 'For Travel',
+    description: 'Psalms of protection recited before embarking on a journey for safe travel.',
     psalms: [91, 121],
   },
   {
@@ -191,9 +191,9 @@ const categoryTranslations: Record<string, Partial<Record<LocaleKey, LocaleTrans
     nl: { title: 'Pesach', description: 'Psalm 136 beschrijft de Uittocht uit Egypte en is traditioneel verbonden aan de Pesach-seder.' },
   },
   travel: {
-    fr: { title: 'Pour le voyage (Tefillat HaDerech)', description: 'Récité avant de partir en voyage pour la protection et un voyage en sécurité.' },
-    es: { title: 'Para el viaje (Tefilat HaDerech)', description: 'Recitado antes de emprender un viaje para protección y viaje seguro.' },
-    nl: { title: 'Voor reis (Tefillat HaDerech)', description: 'Gereciteerd voor vertrek op een reis, voor bescherming en veilig reizen.' },
+    fr: { title: 'Pour le voyage', description: 'Psaumes de protection récités avant de partir en voyage pour un voyage en sécurité.' },
+    es: { title: 'Para el viaje', description: 'Salmos de protección recitados antes de emprender un viaje para viajar seguro.' },
+    nl: { title: 'Voor de reis', description: 'Beschermingspsalmen gereciteerd voor vertrek op reis voor veilig reizen.' },
   },
   livelihood: {
     fr: { title: 'Pour la subsistance (Parnassa)', description: 'Récité pour la stabilité financière, le succès professionnel ou la recherche d\'emploi.' },

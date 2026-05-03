@@ -90,6 +90,29 @@ const IconCheck = () => (
     <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
+const IconSpeechBubble = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+);
+
+const PSALM_HEBREW: Record<number, string> = (() => {
+  const ones = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+  const tens = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+  function toHeb(n: number): string {
+    let rem = n;
+    let r = '';
+    if (rem >= 100) { r += 'ק'; rem -= 100; }
+    if (rem === 15) return r + 'טו';
+    if (rem === 16) return r + 'טז';
+    if (rem >= 10) { r += tens[Math.floor(rem / 10)]; rem %= 10; }
+    r += ones[rem];
+    return r;
+  }
+  const map: Record<number, string> = {};
+  for (let i = 1; i <= 150; i++) map[i] = toHeb(i);
+  return map;
+})();
 
 export default function PsalmPage() {
   const { id } = useParams();
@@ -120,6 +143,12 @@ export default function PsalmPage() {
   const [newListDesc, setNewListDesc] = useState('');
   const [myCollectives, setMyCollectives] = useState<{id: string; name: string; role: string}[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackEmail, setFeedbackEmail] = useState('');
+  const [feedbackSending, setFeedbackSending] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [showSyncToast, setShowSyncToast] = useState(false);
 
   const searchParams = useSearchParams();
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -203,6 +232,8 @@ export default function PsalmPage() {
     if (userId) {
       if (adding) addBookmarkToCloud(userId, psalmNum);
       else removeBookmarkFromCloud(userId, psalmNum);
+    } else if (adding) {
+      triggerSyncToast();
     }
   }
 
@@ -227,8 +258,41 @@ export default function PsalmPage() {
       removePsalmFromList(listId, psalmNum);
     } else {
       addPsalmToList(listId, psalmNum);
+      if (!userId) triggerSyncToast();
     }
     setLists(getLists());
+  }
+
+  function triggerSyncToast() {
+    setShowSyncToast(true);
+    setTimeout(() => setShowSyncToast(false), 3000);
+  }
+
+  async function handleFeedback() {
+    if (!feedbackMessage.trim()) return;
+    setFeedbackSending(true);
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: feedbackMessage, email: feedbackEmail, page: window.location.pathname }),
+      });
+      setFeedbackSent(true);
+      setFeedbackMessage('');
+    } catch {}
+    setFeedbackSending(false);
+  }
+
+  function openFeedback() {
+    setFeedbackSent(false);
+    setFeedbackMessage('');
+    setFeedbackOpen(true);
+  }
+
+  function closeFeedback() {
+    setFeedbackOpen(false);
+    setFeedbackMessage('');
+    setFeedbackSent(false);
   }
 
   function handleShareList(list: PsalmList) {
@@ -538,6 +602,11 @@ export default function PsalmPage() {
               )}
             </div>
 
+            {/* Feedback */}
+            <button onClick={openFeedback} style={hdrBtn()} title="Feedback">
+              <IconSpeechBubble />
+            </button>
+
             {/* Settings */}
             <div ref={settingsRef} style={{ position: 'relative' }}>
               <button onClick={() => setSettingsOpen(!settingsOpen)} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')} title="Settings">
@@ -687,6 +756,7 @@ export default function PsalmPage() {
       <div style={{ textAlign: 'center', padding: isMobile ? '28px 16px 16px' : '40px 24px 24px' }}>
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>תהילים</p>
         <h1 style={{ fontSize: isMobile ? '28px' : '36px', fontWeight: '400', color: textPrimary }}>{t.psalm.title} {psalmNum}</h1>
+        <p dir="rtl" style={{ fontSize: '14px', color: textMuted, marginTop: '4px' }}>({PSALM_HEBREW[psalmNum]})</p>
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '12px auto 0' }} />
       </div>
 
@@ -716,6 +786,50 @@ export default function PsalmPage() {
           ))
         )}
       </div>
+
+      {/* Feedback modal */}
+      {feedbackOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '380px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+            {!feedbackSent ? (
+              <>
+                <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '16px', color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>{t.feedback.title}</h3>
+                <textarea value={feedbackMessage} onChange={e => setFeedbackMessage(e.target.value)}
+                  placeholder={t.feedback.messagePlaceholder} rows={4}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "'Lora', Georgia, serif", boxSizing: 'border-box' as const, resize: 'none', outline: 'none', marginBottom: '10px' }} />
+                <input type="email" value={feedbackEmail} onChange={e => setFeedbackEmail(e.target.value)}
+                  placeholder={t.feedback.emailPlaceholder}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "'Lora', Georgia, serif", boxSizing: 'border-box' as const, outline: 'none', marginBottom: '14px' }} />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={handleFeedback} disabled={feedbackSending || !feedbackMessage.trim()}
+                    style={{ flex: 1, padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: feedbackSending || !feedbackMessage.trim() ? 'default' : 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', opacity: feedbackSending || !feedbackMessage.trim() ? 0.6 : 1 }}>
+                    {feedbackSending ? t.feedback.sending : t.feedback.send}
+                  </button>
+                  <button onClick={closeFeedback}
+                    style={{ padding: '10px 14px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
+                    {t.feedback.close}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: '16px', color: textPrimary, marginBottom: '20px', textAlign: 'center', fontFamily: "'Lora', Georgia, serif" }}>✓ {t.feedback.success}</p>
+                <button onClick={closeFeedback}
+                  style={{ width: '100%', padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit' }}>
+                  {t.feedback.close}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Sync toast */}
+      {showSyncToast && (
+        <div style={{ position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)', background: darkMode ? '#3a2510' : '#2c1810', color: '#f5e9d4', borderRadius: '24px', padding: '12px 20px', fontSize: '13px', zIndex: 500, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.25)' }}>
+          Saved locally. Sign in to sync across devices.
+        </div>
+      )}
     </div>
   );
 }

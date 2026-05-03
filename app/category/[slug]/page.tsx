@@ -14,6 +14,8 @@ const IconMenu = () => (
   </svg>
 );
 
+const SHOW_BEFORE_READING = new Set(['healing','funeral','high-holidays','livelihood','wedding','shidduch','pregnancy','teshuva','israel','protection','times-of-need']);
+
 export default function CategoryPage() {
   const { slug } = useParams();
   const router = useRouter();
@@ -55,9 +57,9 @@ export default function CategoryPage() {
           <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <Logo size={28} />
           </button>
-          <button onClick={() => router.back()}
+          <button onClick={() => router.push('/categories')}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-            {t.allPsalms}
+            ← {t.categories.allCategories}
           </button>
         </div>
         <LanguageSelector />
@@ -71,10 +73,12 @@ export default function CategoryPage() {
         <p style={{ fontSize: '16px', color: textMuted, marginBottom: '16px', fontStyle: 'italic' }}>{localized.description}</p>
         <div style={{ width: '48px', height: '2px', background: goldAccent, marginBottom: '28px' }} />
 
-        <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '10px', padding: '16px 18px', marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>{t.categories.beforeReading}</p>
-          <p style={{ fontSize: '14px', color: textPrimary, lineHeight: '1.75' }}>{t.categories.beforeReadingNote}</p>
-        </div>
+        {SHOW_BEFORE_READING.has(slug as string) && (
+          <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '10px', padding: '16px 18px', marginBottom: '32px' }}>
+            <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>{t.categories.beforeReading}</p>
+            <p style={{ fontSize: '14px', color: textPrimary, lineHeight: '1.75' }}>{t.categories.beforeReadingNote}</p>
+          </div>
+        )}
 
         <p style={{ fontSize: '14px', color: textMuted, marginBottom: '16px' }}>
           {category.psalms.length} {category.psalms.length !== 1 ? t.sidebar.psalms : t.sidebar.psalm}

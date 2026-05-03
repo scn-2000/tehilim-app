@@ -218,10 +218,6 @@ export default function CollectiveReadingPage() {
           <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <Logo size={28} />
           </button>
-          <button onClick={() => router.back()}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-            ← Back
-          </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <LanguageSelector />
@@ -231,9 +227,9 @@ export default function CollectiveReadingPage() {
             style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
             Share link
           </button>
-          <button onClick={() => router.back()}
+          <button onClick={() => router.push('/')}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
-            Done
+            Back to Home
           </button>
         </div>
       </div>

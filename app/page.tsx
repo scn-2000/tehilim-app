@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Logo from './components/Logo';
 import Sidebar from './components/Sidebar';
 import LanguageSelector from './components/LanguageSelector';
+import { useTranslations } from './lib/i18n';
 
 function getSet(key: string): number[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
@@ -12,6 +13,7 @@ function getSet(key: string): number[] {
 
 export default function Home() {
   const router = useRouter();
+  const { t } = useTranslations();
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -61,7 +63,7 @@ export default function Home() {
         </div>
         <h1 style={{ fontSize: isMobile ? '32px' : '40px', fontWeight: '300', marginBottom: '8px' }}>TehilimForAll</h1>
         <p style={{ fontSize: '14px', color: textMuted, marginBottom: '4px' }}>תהילים לכולם</p>
-        <p style={{ fontSize: isMobile ? '15px' : '18px', color: textMuted, marginBottom: '32px' }}>The Book of Psalms — for everyone</p>
+        <p style={{ fontSize: isMobile ? '15px' : '18px', color: textMuted, marginBottom: '32px' }}>{t.tagline}</p>
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '0 auto' }} />
       </div>
 

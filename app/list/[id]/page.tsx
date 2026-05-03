@@ -57,10 +57,6 @@ export default function ListPage() {
           <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <Logo size={28} />
           </button>
-          <button onClick={() => router.back()}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-            ← Back
-          </button>
         </div>
         <LanguageSelector />
       </div>

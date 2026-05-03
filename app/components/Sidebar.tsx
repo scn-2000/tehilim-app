@@ -123,6 +123,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
     const existing = JSON.parse(localStorage.getItem('psalm_lists') || '[]');
     existing.push(newList);
     localStorage.setItem('psalm_lists', JSON.stringify(existing));
+    console.log('[Sidebar] list created:', newList.name);
     setLists(getLists());
     setNewListName('');
     setNewListDesc('');
@@ -343,6 +344,13 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
 
           {sidebarTab === 'categories' && (
             <>
+              {/* All Categories link */}
+              <button onClick={() => navigate('/categories')}
+                style={{ width: '100%', padding: '10px 14px', background: 'transparent', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <span style={{ fontSize: '13px', color: textPrimary, fontWeight: '500' }}>{t.categories.allCategories}</span>
+                <span style={{ color: textMuted, fontSize: '16px' }}>›</span>
+              </button>
+
               {/* Psalm of the Day banner */}
               <div style={{ background: goldAccent, borderRadius: '10px', padding: '14px 16px', marginBottom: '16px' }}>
                 <p style={{ fontSize: '11px', fontWeight: '600', color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>
