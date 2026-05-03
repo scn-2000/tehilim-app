@@ -36,6 +36,7 @@ export default function CollectiveReadingPage() {
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const nameRef = useRef<HTMLDivElement>(null);
 
   const bg = '#fdf6ec';
@@ -62,6 +63,13 @@ export default function CollectiveReadingPage() {
     loadName();
     fetchReading();
   }, [id]);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -207,29 +215,28 @@ export default function CollectiveReadingPage() {
       )}
 
       {/* Header */}
-      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '0 12px' : '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100, height: '56px', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
           <button onClick={() => setSidebarOpen(true)}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
+            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', height: '44px', width: '44px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, height: '44px', display: 'flex', alignItems: 'center' }}>
             <Logo size={28} />
           </button>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <LanguageSelector />
-          {justSaved && <span style={{ fontSize: '13px', color: englishColor, fontStyle: 'italic' }}>✓ Saved</span>}
-          {savedName && <span style={{ fontSize: '13px', color: textMuted }}>Reading as <strong style={{ color: textPrimary }}>{savedName}</strong></span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px', flexWrap: 'nowrap', minWidth: 0 }}>
+          {justSaved && <span style={{ fontSize: '12px', color: englishColor, fontStyle: 'italic', flexShrink: 0 }}>✓ Saved</span>}
+          {savedName && !isMobile && <span style={{ fontSize: '13px', color: textMuted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>Reading as <strong style={{ color: textPrimary }}>{savedName}</strong></span>}
           <button onClick={handleShare}
-            style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
-            Share link
+            style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: isMobile ? '0 10px' : '0 14px', height: '36px', cursor: 'pointer', fontSize: isMobile ? '12px' : '13px', color: 'white', fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            Share
           </button>
           <button onClick={() => router.push('/')}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
-            Back to Home
+            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: isMobile ? '0 10px' : '0 14px', height: '36px', cursor: 'pointer', fontSize: isMobile ? '12px' : '13px', color: textPrimary, fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            {isMobile ? 'Home' : 'Back to Home'}
           </button>
         </div>
       </div>

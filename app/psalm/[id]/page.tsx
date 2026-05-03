@@ -691,27 +691,27 @@ export default function PsalmPage() {
 
       {/* Category navigation bar */}
       {categorySlug && categoryData && (
-        <div style={{ padding: isMobile ? '10px 12px' : '12px 24px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', background: surface }}>
+        <div style={{ padding: isMobile ? '8px 12px' : '10px 24px', borderBottom: `1px solid ${border}`, display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: '6px', background: surface }}>
           <button onClick={() => router.push(`/category/${categorySlug}`)}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: textPrimary, fontFamily: 'inherit', fontSize: isMobile ? '13px' : '14px', maxWidth: isMobile ? '140px' : '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '0 14px', height: '44px', cursor: 'pointer', color: textPrimary, fontFamily: 'inherit', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' as const }}>
             ← {categoryData.title}
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isMobile ? 'space-between' : 'flex-end' }}>
             <button
               onClick={() => prevCategoryPsalm && router.push(`/psalm/${prevCategoryPsalm}?category=${categorySlug}`)}
               disabled={!prevCategoryPsalm}
-              style={{ background: prevCategoryPsalm ? goldAccent : 'none', border: `1px solid ${prevCategoryPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '8px 14px', cursor: prevCategoryPsalm ? 'pointer' : 'default', color: prevCategoryPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: isMobile ? '13px' : '14px', opacity: prevCategoryPsalm ? 1 : 0.4 }}>
+              style={{ background: prevCategoryPsalm ? goldAccent : 'none', border: `1px solid ${prevCategoryPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '0 14px', height: '44px', cursor: prevCategoryPsalm ? 'pointer' : 'default', color: prevCategoryPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: prevCategoryPsalm ? 1 : 0.4, flex: isMobile ? 1 : 'none' }}>
               {t.categories.prevInCategory}
             </button>
             {categoryIndex >= 0 && (
-              <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap', fontWeight: '500' }}>
+              <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap', fontWeight: '500', flexShrink: 0 }}>
                 {categoryIndex + 1} / {categoryData.psalms.length}
               </span>
             )}
             <button
               onClick={() => nextCategoryPsalm && router.push(`/psalm/${nextCategoryPsalm}?category=${categorySlug}`)}
               disabled={!nextCategoryPsalm}
-              style={{ background: nextCategoryPsalm ? goldAccent : 'none', border: `1px solid ${nextCategoryPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '8px 14px', cursor: nextCategoryPsalm ? 'pointer' : 'default', color: nextCategoryPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: isMobile ? '13px' : '14px', opacity: nextCategoryPsalm ? 1 : 0.4 }}>
+              style={{ background: nextCategoryPsalm ? goldAccent : 'none', border: `1px solid ${nextCategoryPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '0 14px', height: '44px', cursor: nextCategoryPsalm ? 'pointer' : 'default', color: nextCategoryPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: nextCategoryPsalm ? 1 : 0.4, flex: isMobile ? 1 : 'none' }}>
               {t.categories.nextInCategory}
             </button>
           </div>
@@ -724,27 +724,27 @@ export default function PsalmPage() {
         const prevListPsalm = listIndex > 0 ? listNavData.psalms[listIndex - 1] : null;
         const nextListPsalm = listIndex !== -1 && listIndex < listNavData.psalms.length - 1 ? listNavData.psalms[listIndex + 1] : null;
         return (
-          <div style={{ padding: isMobile ? '10px 12px' : '12px 24px', borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', background: surface }}>
+          <div style={{ padding: isMobile ? '8px 12px' : '10px 24px', borderBottom: `1px solid ${border}`, display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: '6px', background: surface }}>
             <button onClick={() => router.push(`/list/${listId}`)}
-              style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: 'pointer', color: textPrimary, fontFamily: 'inherit', fontSize: isMobile ? '13px' : '14px', maxWidth: isMobile ? '140px' : '260px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '0 14px', height: '44px', cursor: 'pointer', color: textPrimary, fontFamily: 'inherit', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' as const }}>
               ← {listNavData.name}
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: isMobile ? 'space-between' : 'flex-end' }}>
               <button
                 onClick={() => prevListPsalm && router.push(`/psalm/${prevListPsalm}?list=${listId}`)}
                 disabled={!prevListPsalm}
-                style={{ background: prevListPsalm ? goldAccent : 'none', border: `1px solid ${prevListPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '8px 14px', cursor: prevListPsalm ? 'pointer' : 'default', color: prevListPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: isMobile ? '13px' : '14px', opacity: prevListPsalm ? 1 : 0.4 }}>
+                style={{ background: prevListPsalm ? goldAccent : 'none', border: `1px solid ${prevListPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '0 14px', height: '44px', cursor: prevListPsalm ? 'pointer' : 'default', color: prevListPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: prevListPsalm ? 1 : 0.4, flex: isMobile ? 1 : 'none' }}>
                 {t.categories.prevInList}
               </button>
               {listIndex >= 0 && (
-                <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap', fontWeight: '500' }}>
+                <span style={{ color: textMuted, fontSize: '13px', whiteSpace: 'nowrap', fontWeight: '500', flexShrink: 0 }}>
                   {listIndex + 1} / {listNavData.psalms.length}
                 </span>
               )}
               <button
                 onClick={() => nextListPsalm && router.push(`/psalm/${nextListPsalm}?list=${listId}`)}
                 disabled={!nextListPsalm}
-                style={{ background: nextListPsalm ? goldAccent : 'none', border: `1px solid ${nextListPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '8px 14px', cursor: nextListPsalm ? 'pointer' : 'default', color: nextListPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: isMobile ? '13px' : '14px', opacity: nextListPsalm ? 1 : 0.4 }}>
+                style={{ background: nextListPsalm ? goldAccent : 'none', border: `1px solid ${nextListPsalm ? goldAccent : border}`, borderRadius: '8px', padding: '0 14px', height: '44px', cursor: nextListPsalm ? 'pointer' : 'default', color: nextListPsalm ? 'white' : textMuted, fontFamily: 'inherit', fontSize: '13px', opacity: nextListPsalm ? 1 : 0.4, flex: isMobile ? 1 : 'none' }}>
                 {t.categories.nextInList}
               </button>
             </div>

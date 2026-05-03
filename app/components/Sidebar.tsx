@@ -85,18 +85,25 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
     } catch {}
   }, [isOpen]);
 
+  async function mergeAndSaveLists(cloudLists: PsalmList[]): Promise<PsalmList[]> {
+    const cloudIds = new Set(cloudLists.map(l => l.id));
+    const currentLocal = getLists();
+    const merged: PsalmList[] = [...cloudLists, ...currentLocal.filter(l => !cloudIds.has(l.id))];
+    localStorage.setItem('psalm_lists', JSON.stringify(merged));
+    return merged;
+  }
+
   async function autoSync(userId: string) {
-    const localLists = getLists(); // snapshot before upload
+    // Small delay so any in-flight createList saves reach localStorage before we sync
+    await new Promise(r => setTimeout(r, 500));
     await syncBookmarksToCloud(userId);
     await syncListsToCloud(userId);
     const cloudBookmarks = await loadBookmarksFromCloud(userId);
     localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
-    const cloudLists = await loadListsFromCloud(userId);
-    // Merge: cloud wins for same id, keep local-only lists not yet in cloud
-    const cloudIds = new Set(cloudLists.map((l: { id: string }) => l.id));
-    const merged: PsalmList[] = [...cloudLists as PsalmList[], ...localLists.filter(l => !cloudIds.has(l.id))];
-    localStorage.setItem('psalm_lists', JSON.stringify(merged));
-    console.log('[Sidebar] autoSync: cloud:', cloudLists.length, 'local-only:', merged.length - cloudLists.length, 'total:', merged.length);
+    const cloudLists = await loadListsFromCloud(userId) as PsalmList[];
+    // Use getLists() at merge time (not a pre-snapshot) so lists created during the delay survive
+    const merged = await mergeAndSaveLists(cloudLists);
+    console.log('[Sidebar] autoSync done: cloud:', cloudLists.length, 'local-only:', merged.length - cloudLists.length, 'total:', merged.length);
     setBookmarks(cloudBookmarks);
     setLists(merged);
   }
@@ -104,34 +111,41 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   async function handleSync() {
     if (!user) return;
     setSyncing(true);
-    const localLists = getLists();
     await syncBookmarksToCloud(user.id);
     await syncListsToCloud(user.id);
     const cloudBookmarks = await loadBookmarksFromCloud(user.id);
     localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
-    const cloudLists = await loadListsFromCloud(user.id);
-    const cloudIds = new Set(cloudLists.map((l: { id: string }) => l.id));
-    const merged: PsalmList[] = [...cloudLists as PsalmList[], ...localLists.filter(l => !cloudIds.has(l.id))];
-    localStorage.setItem('psalm_lists', JSON.stringify(merged));
+    const cloudLists = await loadListsFromCloud(user.id) as PsalmList[];
+    const merged = await mergeAndSaveLists(cloudLists);
     setBookmarks(cloudBookmarks);
     setLists(merged);
     setSyncing(false);
   }
 
-  function handleCreateList() {
+  async function handleCreateList() {
     if (!newListName.trim()) return;
     const newList = createList(newListName.trim(), newListDesc.trim());
-    // Immediately push to cloud so it survives the next autoSync
-    if (user) {
-      syncListsToCloud(user.id).catch(err => console.error('[Sidebar] cloud sync after create failed:', err));
-    }
     window.dispatchEvent(new Event('storage'));
-    const saved = getLists();
-    console.log('[Sidebar] list created:', newList.id, newList.name, '| total in storage:', saved.length);
-    setLists(saved);
     setNewListName('');
     setNewListDesc('');
     setCreatingList(false);
+
+    if (user) {
+      try {
+        await syncListsToCloud(user.id);
+        const cloudLists = await loadListsFromCloud(user.id) as PsalmList[];
+        const merged = await mergeAndSaveLists(cloudLists);
+        console.log('[Sidebar] list synced to cloud:', newList.id, '| total:', merged.length);
+        setLists(merged);
+      } catch (err) {
+        console.error('[Sidebar] cloud sync failed, using local:', err);
+        setLists(getLists());
+      }
+    } else {
+      const saved = getLists();
+      console.log('[Sidebar] list created locally:', newList.id, '| total:', saved.length);
+      setLists(saved);
+    }
   }
 
   function handleDeleteList(listId: string) {
@@ -195,7 +209,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
       )}
 
       <div style={{
-        position: 'fixed', top: 0, left: 0, height: '100vh', width: 'min(300px, 85vw)',
+        position: 'fixed', top: 0, left: 0, height: '100dvh', width: 'min(300px, 85vw)',
         background: surface, borderRight: `1px solid ${border}`,
         zIndex: 400, transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
         transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column',
@@ -229,7 +243,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', paddingBottom: '20px' }}>
 
           {sidebarTab === 'bookmarks' && (
             <>
@@ -399,7 +413,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
         </div>
 
         {/* Footer: auth + feedback + nav */}
-        <div style={{ padding: '12px 20px', borderTop: `1px solid ${border}` }}>
+        <div style={{ padding: '12px 20px', borderTop: `1px solid ${border}`, flexShrink: 0 }}>
           {user ? (
             <div>
               <p style={{ fontSize: '12px', color: textMuted, marginBottom: '8px' }}>

@@ -20,6 +20,10 @@ html {
   text-size-adjust: 100%;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--cream);
   color: var(--text-primary);
@@ -28,6 +32,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 button {
