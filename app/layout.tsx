@@ -22,7 +22,7 @@ export const metadata: Metadata = {
       "Read all 150 Psalms in Hebrew, English, and phonetics. Bookmark psalms, create reading lists, and explore by category. Free for everyone.",
     url: BASE_URL,
     siteName: "TehilimForAll",
-    images: [{ url: "/icon-512.png", width: 512, height: 512, alt: "TehilimForAll" }],
+    images: [{ url: "https://tehilimforall.com/og-image.png", width: 1200, height: 630, alt: "TehilimForAll — The Book of Psalms for Everyone" }],
     locale: "en_US",
     type: "website",
   },
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     title: "TehilimForAll — The Book of Psalms for Everyone",
     description:
       "Read all 150 Psalms in Hebrew, English, and phonetics. Free for everyone.",
-    images: ["/icon-512.png"],
+    images: ["https://tehilimforall.com/og-image.png"],
   },
 };
 
