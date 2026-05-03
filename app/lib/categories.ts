@@ -41,7 +41,7 @@ export const categories: Category[] = [
     slug: 'psalm-of-the-day',
     title: 'Psalm of the Day (Shir Shel Yom)',
     description: 'Each day of the week has a designated psalm, originally sung by the Levites in the Holy Temple during the morning sacrifice. Each psalm corresponds to a day of Creation. Sunday: 24, Monday: 48, Tuesday: 82, Wednesday: 94, Thursday: 81, Friday: 93, Shabbat: 92.',
-    psalms: [24, 48, 81, 82, 92, 93, 94],
+    psalms: [24, 48, 82, 94, 81, 93, 92],
   },
   {
     slug: 'high-holidays',

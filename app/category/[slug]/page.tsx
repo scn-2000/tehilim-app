@@ -85,10 +85,15 @@ export default function CategoryPage() {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {category.psalms.map(num => (
+          {category.psalms.map((num, idx) => (
             <button key={num} onClick={() => router.push(`/psalm/${num}?category=${slug}`)}
               style={{ padding: '16px 18px', background: surface, border: `1px solid ${border}`, borderRadius: '10px', cursor: 'pointer', textAlign: 'left', fontSize: '15px', color: textPrimary, fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontWeight: '500' }}>{t.psalm.title} {num}</span>
+              <div>
+                {slug === 'psalm-of-the-day' && (
+                  <p style={{ fontSize: '12px', color: textMuted, marginBottom: '3px', fontFamily: 'inherit' }}>{t.categories.dayNames[idx]}</p>
+                )}
+                <span style={{ fontWeight: '500' }}>{t.psalm.title} {num}</span>
+              </div>
               <span style={{ color: textMuted, fontSize: '13px' }}>{t.categories.readNow}</span>
             </button>
           ))}

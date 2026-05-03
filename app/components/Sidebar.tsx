@@ -112,19 +112,11 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
 
   function handleCreateList() {
     if (!newListName.trim()) return;
-    const id = Math.random().toString(36).slice(2, 10);
-    const newList = {
-      id,
-      name: newListName.trim(),
-      description: newListDesc.trim(),
-      psalms: [],
-      createdAt: Date.now(),
-    };
-    const existing = JSON.parse(localStorage.getItem('psalm_lists') || '[]');
-    existing.push(newList);
-    localStorage.setItem('psalm_lists', JSON.stringify(existing));
-    console.log('[Sidebar] list created:', newList.name);
-    setLists(getLists());
+    const newList = createList(newListName.trim(), newListDesc.trim());
+    window.dispatchEvent(new Event('storage'));
+    const saved = getLists();
+    console.log('[Sidebar] list created:', newList.name, '| total:', saved.length, '| raw:', localStorage.getItem('psalm_lists'));
+    setLists(saved);
     setNewListName('');
     setNewListDesc('');
     setCreatingList(false);
