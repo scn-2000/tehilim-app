@@ -333,7 +333,7 @@ export default function PsalmPage() {
   const surface = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
   const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
   const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
-  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#9a7a5a';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#7c6248';
   const hebrewColor = highContrast ? '#00008B' : darkMode ? '#a8c4e0' : '#1a3a5c';
   const englishColor = highContrast ? '#000000' : darkMode ? '#7ec89a' : '#1e4d2b';
   const phoneticsColor = highContrast ? '#8B0000' : darkMode ? '#d4a86a' : '#7a4e1e';
@@ -375,12 +375,12 @@ export default function PsalmPage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button onClick={() => { router.push('/'); setSidebarOpen(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => { router.push('/'); setSidebarOpen(false); }} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <Logo size={28} />
             </button>
             <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>TehilimForAll</span>
           </div>
-          <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
+          <button onClick={() => setSidebarOpen(false)} aria-label="Close panel" style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
             <IconClose />
           </button>
         </div>
@@ -465,11 +465,11 @@ export default function PsalmPage() {
                           style={{ flex: 1, padding: '6px', background: list.psalms.includes(psalmNum) ? 'none' : goldAccent, border: `1px solid ${list.psalms.includes(psalmNum) ? border : goldAccent}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: list.psalms.includes(psalmNum) ? textMuted : 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                           {list.psalms.includes(psalmNum) ? <><IconCheck /> {t.sidebar.remove}</> : <><IconPlus /> {t.sidebar.addPsalm} {psalmNum}</>}
                         </button>
-                        <button onClick={() => handleShareList(list)}
+                        <button onClick={() => handleShareList(list)} aria-label={`Share list ${list.name}`}
                           style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
                           <IconPaperPlane />
                         </button>
-                        <button onClick={() => handleDeleteList(list.id)}
+                        <button onClick={() => handleDeleteList(list.id)} aria-label={`Delete list ${list.name}`}
                           style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
                           <IconClose />
                         </button>
@@ -526,10 +526,10 @@ export default function PsalmPage() {
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '10px 12px' : '12px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '8px' : '0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => setSidebarOpen(true)} style={{ ...hdrBtn(), padding: '7px 9px' }}>
+            <button onClick={() => setSidebarOpen(true)} aria-label="Open menu" style={{ ...hdrBtn(), padding: '7px 9px' }}>
               <IconMenu />
             </button>
-            <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <Logo size={28} />
             </button>
             {!isMobile && (
@@ -546,7 +546,7 @@ export default function PsalmPage() {
 
             {/* Save/Bookmark dropdown */}
             <div ref={saveRef} style={{ position: 'relative' }}>
-              <button onClick={() => setSaveOpen(!saveOpen)} style={hdrBtn(isBookmarked, goldAccent)} title="Save">
+              <button onClick={() => setSaveOpen(!saveOpen)} aria-label={isBookmarked ? 'Saved — manage saves' : 'Save psalm'} aria-expanded={saveOpen} style={hdrBtn(isBookmarked, goldAccent)}>
                 <IconBookmark filled={isBookmarked} />
               </button>
               {saveOpen && (
@@ -585,7 +585,7 @@ export default function PsalmPage() {
 
             {/* Share */}
             <div ref={shareRef} style={{ position: 'relative' }}>
-              <button onClick={() => setShareOpen(!shareOpen)} style={hdrBtn()} title="Share">
+              <button onClick={() => setShareOpen(!shareOpen)} aria-label="Share psalm" aria-expanded={shareOpen} style={hdrBtn()}>
                 <IconPaperPlane />
               </button>
               {shareOpen && (
@@ -603,13 +603,13 @@ export default function PsalmPage() {
             </div>
 
             {/* Feedback */}
-            <button onClick={openFeedback} style={hdrBtn()} title="Feedback">
+            <button onClick={openFeedback} aria-label="Send feedback" style={hdrBtn()}>
               <IconSpeechBubble />
             </button>
 
             {/* Settings */}
             <div ref={settingsRef} style={{ position: 'relative' }}>
-              <button onClick={() => setSettingsOpen(!settingsOpen)} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')} title="Settings">
+              <button onClick={() => setSettingsOpen(!settingsOpen)} aria-label="Settings" aria-expanded={settingsOpen} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')}>
                 <IconSettings />
               </button>
               {settingsOpen && (
@@ -660,7 +660,7 @@ export default function PsalmPage() {
 
         {/* Row 2: Prev | Psalm dropdown | Next — hidden when browsing a category or list */}
         {!categorySlug && !listId && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-          <button onClick={() => router.push(`/psalm/${psalmNum - 1}`)} disabled={psalmNum <= 1}
+          <button onClick={() => router.push(`/psalm/${psalmNum - 1}`)} disabled={psalmNum <= 1} aria-label="Previous psalm"
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum <= 1 ? 'default' : 'pointer', color: psalmNum <= 1 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum <= 1 ? 0.4 : 1 }}>
             ←
           </button>
@@ -682,7 +682,7 @@ export default function PsalmPage() {
               </div>
             )}
           </div>
-          <button onClick={() => router.push(`/psalm/${psalmNum + 1}`)} disabled={psalmNum >= 150}
+          <button onClick={() => router.push(`/psalm/${psalmNum + 1}`)} disabled={psalmNum >= 150} aria-label="Next psalm"
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum >= 150 ? 'default' : 'pointer', color: psalmNum >= 150 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum >= 150 ? 0.4 : 1 }}>
             →
           </button>

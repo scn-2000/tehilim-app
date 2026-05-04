@@ -29,7 +29,7 @@ export default function AuthPage() {
   const surface = '#fff8ee';
   const border = '#e8d5b5';
   const textPrimary = '#2c1810';
-  const textMuted = '#9a7a5a';
+  const textMuted = '#7c6248';
   const goldAccent = '#c9a96e';
 
   const inputStyle = {
@@ -84,11 +84,11 @@ export default function AuthPage() {
 
       <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setSidebarOpen(true)}
+          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
             <IconMenu />
           </button>
-          <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <Logo size={28} />
           </button>
         </div>
@@ -97,7 +97,7 @@ export default function AuthPage() {
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-        <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', marginBottom: '16px' }}>
+        <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', marginBottom: '16px' }}>
           <Logo size={56} />
         </button>
         <h1 style={{ fontSize: '28px', fontWeight: '400', marginBottom: '4px' }}>TehilimForAll</h1>

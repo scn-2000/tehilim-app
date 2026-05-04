@@ -13,7 +13,7 @@ interface Props {
 export default function LanguageSelector({
   border = '#e8d5b5',
   textPrimary = '#2c1810',
-  textMuted = '#9a7a5a',
+  textMuted = '#7c6248',
   surface = '#fff8ee',
 }: Props) {
   const { locale, setLocale } = useTranslations();

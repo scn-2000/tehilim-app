@@ -21,7 +21,7 @@ export default function NewCollectiveReadingPage() {
   const bg = '#fdf6ec';
   const border = '#e8d5b5';
   const textPrimary = '#2c1810';
-  const textMuted = '#9a7a5a';
+  const textMuted = '#7c6248';
   const goldAccent = '#c9a96e';
 
   const inputStyle = {
@@ -65,13 +65,13 @@ export default function NewCollectiveReadingPage() {
 
       <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setSidebarOpen(true)}
+          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <Logo size={28} />
           </button>
           <button onClick={() => router.back()}

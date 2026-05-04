@@ -56,7 +56,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
   const surface = darkMode ? '#2c1e0f' : '#fff8ee';
   const border = darkMode ? '#5c3d1e' : '#e8d5b5';
   const textPrimary = darkMode ? '#f5e9d4' : '#2c1810';
-  const textMuted = darkMode ? '#c9a96e' : '#9a7a5a';
+  const textMuted = darkMode ? '#c9a96e' : '#7c6248';
   const goldAccent = '#c9a96e';
 
   const today = new Date().getDay();
@@ -217,12 +217,12 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => navigate('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <Logo size={28} />
             </button>
             <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>{t.sidebar.title}</span>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
+          <button onClick={onClose} aria-label="Close menu" style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
             <IconClose />
           </button>
         </div>
@@ -311,11 +311,11 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
                         <span style={{ color: textMuted, fontSize: '16px' }}>›</span>
                       </button>
                       <div style={{ borderTop: `1px solid ${border}`, padding: '8px 14px', background: darkMode ? '#2a1a0a' : '#faf4ea', display: 'flex', gap: '6px' }}>
-                        <button onClick={() => handleShareList(list)}
+                        <button onClick={() => handleShareList(list)} aria-label={`Share list ${list.name}`}
                           style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
                           <IconPaperPlane />
                         </button>
-                        <button onClick={() => handleDeleteList(list.id)}
+                        <button onClick={() => handleDeleteList(list.id)} aria-label={`Delete list ${list.name}`}
                           style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
                           <IconClose />
                         </button>

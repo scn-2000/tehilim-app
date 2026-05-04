@@ -55,7 +55,7 @@ export default function Home() {
   const surface = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
   const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
   const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
-  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#9a7a5a';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#7c6248';
   const goldAccent = highContrast ? '#000000' : '#c9a96e';
 
   const settingToggle = (active: boolean) => ({
@@ -76,20 +76,20 @@ export default function Home() {
       {/* Sticky top bar — padding via CSS media query, no JS */}
       <div className="home-topbar" style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setSidebarOpen(true)}
+          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', height: '44px', width: '44px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, height: '44px', display: 'flex', alignItems: 'center' }}>
+          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, height: '44px', display: 'flex', alignItems: 'center' }}>
             <Logo size={32} />
           </button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <LanguageSelector border={border} surface={surface} textPrimary={textPrimary} textMuted={textMuted} />
           <div ref={settingsRef} style={{ position: 'relative' }}>
-            <button onClick={() => setSettingsOpen(!settingsOpen)}
+            <button onClick={() => setSettingsOpen(!settingsOpen)} aria-label="Settings" aria-expanded={settingsOpen}
               style={{ background: settingsOpen ? (darkMode ? '#3a2510' : '#f0e4cc') : 'none', border: `1px solid ${settingsOpen ? 'transparent' : border}`, borderRadius: '8px', height: '44px', width: '44px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <IconSettings />
             </button>

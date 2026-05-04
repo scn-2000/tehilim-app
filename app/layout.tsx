@@ -72,7 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="he" className={`${frankRuhlLibre.variable} ${lora.variable}`}>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#c9a96e" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -88,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ServiceWorkerRegistration />
-        {children}
+        <main>{children}</main>
         <Analytics />
         <SpeedInsights />
       </body>
