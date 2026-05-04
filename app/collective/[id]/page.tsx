@@ -169,13 +169,13 @@ export default function CollectiveReadingPage() {
   const progress = Math.round((totalClaimed / totalPsalms) * 100);
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Lora', Georgia, serif" }}>
+    <div style={{ minHeight: '100vh', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "var(--font-lora), Georgia, serif" }}>
       <p style={{ color: textMuted }}>Loading...</p>
     </div>
   );
 
   if (!reading) return (
-    <div style={{ minHeight: '100vh', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Lora', Georgia, serif" }}>
+    <div style={{ minHeight: '100vh', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "var(--font-lora), Georgia, serif" }}>
       <p style={{ color: textMuted }}>Collective reading not found.</p>
     </div>
   );
@@ -186,7 +186,7 @@ export default function CollectiveReadingPage() {
   }));
 
   return (
-    <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Lora', Georgia, serif", color: textPrimary }}>
+    <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
 
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
 

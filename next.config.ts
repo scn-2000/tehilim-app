@@ -12,8 +12,8 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
-      "font-src 'self' fonts.gstatic.com",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self'",
       "img-src 'self' data: blob:",
       "connect-src 'self' https://cabitkearvzjdzudompp.supabase.co https://www.sefaria.org https://api.resend.com",
       "frame-ancestors 'none'",

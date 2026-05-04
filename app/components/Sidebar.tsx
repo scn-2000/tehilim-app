@@ -449,13 +449,13 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
           <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '380px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
             {!feedbackSent ? (
               <>
-                <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '16px', color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>{t.feedback.title}</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '16px', color: textPrimary, fontFamily: "var(--font-lora), Georgia, serif" }}>{t.feedback.title}</h3>
                 <textarea value={feedbackMessage} onChange={e => setFeedbackMessage(e.target.value)}
                   placeholder={t.feedback.messagePlaceholder} rows={4}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "'Lora', Georgia, serif", boxSizing: 'border-box' as const, resize: 'none', outline: 'none', marginBottom: '10px' }} />
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "var(--font-lora), Georgia, serif", boxSizing: 'border-box' as const, resize: 'none', outline: 'none', marginBottom: '10px' }} />
                 <input type="email" value={feedbackEmail} onChange={e => setFeedbackEmail(e.target.value)}
                   placeholder={t.feedback.emailPlaceholder}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "'Lora', Georgia, serif", boxSizing: 'border-box' as const, outline: 'none', marginBottom: '14px' }} />
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: `1px solid ${border}`, background: bg, color: textPrimary, fontSize: '14px', fontFamily: "var(--font-lora), Georgia, serif", boxSizing: 'border-box' as const, outline: 'none', marginBottom: '14px' }} />
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button onClick={handleFeedback} disabled={feedbackSending || !feedbackMessage.trim()}
                     style={{ flex: 1, padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: feedbackSending || !feedbackMessage.trim() ? 'default' : 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit', opacity: feedbackSending || !feedbackMessage.trim() ? 0.6 : 1 }}>
@@ -469,7 +469,7 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
               </>
             ) : (
               <>
-                <p style={{ fontSize: '16px', color: textPrimary, marginBottom: '20px', textAlign: 'center', fontFamily: "'Lora', Georgia, serif" }}>✓ {t.feedback.success}</p>
+                <p style={{ fontSize: '16px', color: textPrimary, marginBottom: '20px', textAlign: 'center', fontFamily: "var(--font-lora), Georgia, serif" }}>✓ {t.feedback.success}</p>
                 <button onClick={closeFeedback}
                   style={{ width: '100%', padding: '10px', background: goldAccent, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: 'white', fontFamily: 'inherit' }}>
                   {t.feedback.close}

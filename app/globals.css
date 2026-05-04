@@ -27,7 +27,7 @@ html {
 body {
   background-color: var(--cream);
   color: var(--text-primary);
-  font-family: 'Lora', Georgia, serif;
+  font-family: var(--font-lora), Georgia, serif;
   line-height: 1.7;
   min-height: 100vh;
   min-height: 100dvh;
@@ -36,7 +36,7 @@ body {
 }
 
 button {
-  font-family: 'Lora', Georgia, serif;
+  font-family: var(--font-lora), Georgia, serif;
   -webkit-tap-highlight-color: transparent;
 }
 

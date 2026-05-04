@@ -77,7 +77,7 @@ export default function Home() {
   const toggleKnob = { width: '18px', height: '18px', borderRadius: '50%', background: 'white' };
 
   return (
-    <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "'Lora', Georgia, serif" }}>
+    <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "var(--font-lora), Georgia, serif" }}>
 
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={darkMode} />
 
