@@ -47,3 +47,38 @@ button {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #c9a96e; border-radius: 3px; }
+
+/* ── Home page responsive layout ───────────────────────────────────────────
+   All isMobile-conditional layout is expressed here so the browser applies
+   the correct geometry before first paint — no JS hydration required.       */
+
+.home-topbar { padding: 0 24px; }
+
+.home-hero { text-align: center; padding: 60px 24px 40px; }
+
+.home-hero-logo { display: flex; justify-content: center; margin-bottom: 16px; }
+.home-hero-logo svg { width: 72px; height: 72px; }
+
+.home-title   { font-size: 40px; }
+.home-tagline { font-size: 18px; }
+
+.home-grid-outer { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+.home-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; }
+
+.home-grid-small  .psalm-btn { padding: 8px 2px;  font-size: 12px; }
+.home-grid-medium .psalm-btn { padding: 10px 4px; font-size: 14px; }
+.home-grid-large  .psalm-btn { padding: 14px 4px; font-size: 16px; }
+
+@media (max-width: 639px) {
+  .home-topbar  { padding: 0 16px; }
+  .home-hero    { padding: 40px 16px 32px; }
+  .home-hero-logo svg { width: 56px; height: 56px; }
+  .home-title   { font-size: 32px; }
+  .home-tagline { font-size: 15px; }
+  .home-grid-outer { padding: 0 12px 60px; }
+  .home-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .home-grid-small  .psalm-btn { padding: 10px 2px; font-size: 13px; }
+  .home-grid-medium .psalm-btn { padding: 14px 4px; font-size: 15px; }
+  .home-grid-large  .psalm-btn { padding: 18px 4px; font-size: 17px; }
+}

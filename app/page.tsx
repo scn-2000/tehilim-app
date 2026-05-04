@@ -25,7 +25,6 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
-  const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -38,10 +37,6 @@ export default function Home() {
       const fs = localStorage.getItem('pref_fontsize');
       if (fs === 'small' || fs === 'medium' || fs === 'large') setFontSize(fs);
     } catch {}
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
   }, []);
 
   useEffect(() => {
@@ -63,9 +58,6 @@ export default function Home() {
   const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#9a7a5a';
   const goldAccent = highContrast ? '#000000' : '#c9a96e';
 
-  const gridFontSize = { small: isMobile ? '13px' : '12px', medium: isMobile ? '15px' : '14px', large: isMobile ? '17px' : '16px' }[fontSize];
-  const gridPadding = { small: isMobile ? '10px 2px' : '8px 2px', medium: isMobile ? '14px 4px' : '10px 4px', large: isMobile ? '18px 4px' : '14px 4px' }[fontSize];
-
   const settingToggle = (active: boolean) => ({
     width: '42px', height: '24px', borderRadius: '12px',
     background: active ? goldAccent : (darkMode ? '#4a3520' : '#ddd'),
@@ -81,8 +73,8 @@ export default function Home() {
 
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={darkMode} />
 
-      {/* Sticky top bar */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '0 16px' : '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' }}>
+      {/* Sticky top bar — padding via CSS media query, no JS */}
+      <div className="home-topbar" style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button onClick={() => setSidebarOpen(true)}
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', height: '44px', width: '44px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -146,28 +138,27 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Header */}
-      <div style={{ textAlign: 'center', padding: isMobile ? '40px 16px 32px' : '60px 24px 40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-          <Logo size={isMobile ? 56 : 72} />
+      {/* Header — all size/padding via CSS media query, no JS */}
+      <div className="home-hero">
+        <div className="home-hero-logo">
+          <Logo size={72} />
         </div>
-        <h1 style={{ fontSize: isMobile ? '32px' : '40px', fontWeight: '300', marginBottom: '8px' }}>TehilimForAll</h1>
+        <h1 className="home-title" style={{ fontWeight: '300', marginBottom: '8px' }}>TehilimForAll</h1>
         <p style={{ fontSize: '14px', color: textMuted, marginBottom: '4px' }}>תהילים לכולם</p>
-        <p style={{ fontSize: isMobile ? '15px' : '18px', color: textMuted, marginBottom: '32px' }}>{t.tagline}</p>
+        <p className="home-tagline" style={{ color: textMuted, marginBottom: '32px' }}>{t.tagline}</p>
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '0 auto' }} />
       </div>
 
-      {/* Psalm grid */}
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: isMobile ? '0 12px 60px' : '0 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${isMobile ? 5 : 10}, 1fr)`, gap: isMobile ? '6px' : '8px' }}>
+      {/* Psalm grid — columns, gap, padding, button size via CSS media query */}
+      <div className="home-grid-outer">
+        <div className={`home-grid home-grid-${fontSize}`}>
           {Array.from({ length: 150 }, (_, i) => i + 1).map(num => {
             const isBookmarked = bookmarks.includes(num);
             return (
               <button key={num} onClick={() => router.push(`/psalm/${num}`)}
+                className="psalm-btn"
                 style={{
-                  padding: gridPadding,
                   cursor: 'pointer', borderRadius: '8px',
-                  fontSize: gridFontSize,
                   fontFamily: 'inherit',
                   border: isBookmarked ? `2px solid ${goldAccent}` : `1px solid ${border}`,
                   background: isBookmarked ? (highContrast ? '#e8e8e8' : darkMode ? '#3a2a10' : '#fdf0d5') : surface,
