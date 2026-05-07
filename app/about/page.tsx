@@ -50,9 +50,9 @@ export default function AboutPage() {
           <p style={{ fontSize: '13px', color: textMuted, marginBottom: '20px', fontStyle: 'italic' }}>
             {t.about.leilui.phonetic}
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
             {LEILUI_NAMES.map((name) => (
-              <p key={name} style={{ fontSize: '14px', color: textMuted, lineHeight: 1.6, maxWidth: '420px', margin: 0, textAlign: 'left' }}>
+              <p key={name} style={{ fontSize: '14px', color: textMuted, lineHeight: 1.6, maxWidth: '420px', margin: 0, textAlign: 'center' }}>
                 {name}
               </p>
             ))}
