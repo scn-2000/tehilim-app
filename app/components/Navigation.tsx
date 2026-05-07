@@ -38,7 +38,7 @@ export default function Navigation() {
   const activeTab = getActiveTab(pathname);
 
   const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
-  const tabsBg = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
+  const tabsBg = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#f0e6d3';
   const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
   const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
   const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#9a7a5a';
@@ -193,6 +193,18 @@ export default function Navigation() {
             )
           )}
 
+          {pathname !== '/auth' && (
+            <button
+              onClick={() => router.push('/about')}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: '13px', color: textMuted, fontFamily: 'inherit',
+                padding: '0 4px', whiteSpace: 'nowrap',
+              }}>
+              About
+            </button>
+          )}
+
           <LanguageSelector border={border} surface={surface} textPrimary={textPrimary} textMuted={textMuted} />
         </div>
       </div>
@@ -219,7 +231,7 @@ export default function Navigation() {
                 borderBottom: activeTab === key ? `2px solid ${goldAccent}` : '2px solid transparent',
                 cursor: 'pointer',
                 fontSize: '13px',
-                fontWeight: activeTab === key ? '600' : '400',
+                fontWeight: '600',
                 color: activeTab === key ? textPrimary : textMuted,
                 fontFamily: 'inherit',
                 whiteSpace: 'nowrap',

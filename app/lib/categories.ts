@@ -5,6 +5,39 @@ export interface Category {
   psalms: number[];
 }
 
+export const DAILY_TEHILIM: { day: number; first: number; last: number }[] = [
+  { day: 1,  first: 1,   last: 9   },
+  { day: 2,  first: 10,  last: 17  },
+  { day: 3,  first: 18,  last: 22  },
+  { day: 4,  first: 23,  last: 28  },
+  { day: 5,  first: 29,  last: 34  },
+  { day: 6,  first: 35,  last: 38  },
+  { day: 7,  first: 39,  last: 43  },
+  { day: 8,  first: 44,  last: 48  },
+  { day: 9,  first: 49,  last: 54  },
+  { day: 10, first: 55,  last: 59  },
+  { day: 11, first: 60,  last: 65  },
+  { day: 12, first: 66,  last: 68  },
+  { day: 13, first: 69,  last: 71  },
+  { day: 14, first: 72,  last: 76  },
+  { day: 15, first: 77,  last: 78  },
+  { day: 16, first: 79,  last: 82  },
+  { day: 17, first: 83,  last: 87  },
+  { day: 18, first: 88,  last: 89  },
+  { day: 19, first: 90,  last: 96  },
+  { day: 20, first: 97,  last: 103 },
+  { day: 21, first: 104, last: 105 },
+  { day: 22, first: 106, last: 107 },
+  { day: 23, first: 108, last: 112 },
+  { day: 24, first: 113, last: 118 },
+  { day: 25, first: 119, last: 119 },
+  { day: 26, first: 120, last: 134 },
+  { day: 27, first: 135, last: 139 },
+  { day: 28, first: 140, last: 144 },
+  { day: 29, first: 145, last: 147 },
+  { day: 30, first: 148, last: 150 },
+];
+
 export const BEFORE_READING_NOTE =
   "Before reading, many begin with a declaration of intent (L'shem yichud). When reading for someone else, mention their Hebrew name: [Name] ben/bat [Mother's name]. Conclude with a personal prayer in your own words.";
 
@@ -139,6 +172,12 @@ export const categories: Category[] = [
     description: 'A powerful general list for any time of difficulty or personal need, drawn from traditional sources.',
     psalms: [3, 6, 13, 16, 20, 22, 23, 27, 32, 41, 42, 51, 56, 59, 70, 77, 86, 88, 90, 102, 121, 128, 130, 137, 142, 143, 150],
   },
+  {
+    slug: 'daily-tehilim',
+    title: 'Complete Tehilim in a Month',
+    description: "The traditional 30-day cycle for completing all 150 psalms. Each day has a designated portion — today's day is highlighted.",
+    psalms: Array.from({ length: 150 }, (_, i) => i + 1),
+  },
 ];
 
 type LocaleKey = 'fr' | 'es' | 'nl';
@@ -244,6 +283,11 @@ const categoryTranslations: Record<string, Partial<Record<LocaleKey, LocaleTrans
     fr: { title: 'Général / En temps de besoin', description: 'Une liste générale pour tout moment de difficulté ou de besoin personnel, tirée de sources traditionnelles.' },
     es: { title: 'General / En tiempos de necesidad', description: 'Una lista general poderosa para cualquier momento de dificultad o necesidad personal, de fuentes tradicionales.' },
     nl: { title: 'Algemeen / In tijden van nood', description: 'Een krachtige algemene lijst voor elk moment van moeilijkheid of persoonlijke behoefte, uit traditionele bronnen.' },
+  },
+  'daily-tehilim': {
+    fr: { title: 'Compléter les Tehilim en un mois', description: "Le cycle traditionnel de 30 jours pour compléter les 150 psaumes. La portion du jour est mise en évidence." },
+    es: { title: 'Completar Tehilim en un mes', description: "El ciclo tradicional de 30 días para completar los 150 salmos. La porción de hoy está resaltada." },
+    nl: { title: 'Voltooi Tehilim in een maand', description: "De traditionele 30-daagse cyclus om alle 150 psalmen te voltooien. Het gedeelte van vandaag is gemarkeerd." },
   },
 };
 
