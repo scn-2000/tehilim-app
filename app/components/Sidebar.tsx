@@ -437,8 +437,12 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
             {t.sidebar.feedback}
           </button>
           <button onClick={() => navigate('/')}
-            style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
+            style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', marginBottom: '6px' }}>
             {t.sidebar.allPsalms}
+          </button>
+          <button onClick={() => navigate('/about')}
+            style={{ width: '100%', padding: '7px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>
+            About TehilimForAll
           </button>
         </div>
       </div>

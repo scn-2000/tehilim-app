@@ -10,7 +10,13 @@
       "Bash(git commit *)",
       "Bash(node -e ' *)",
       "Bash(git checkout *)",
-      "Bash(wmic logicaldisk *)"
+      "Bash(wmic logicaldisk *)",
+      "Bash(node *)",
+      "Read(//c/Users/snejman/AppData/Roaming/npm/node_modules/**)",
+      "Bash(npm ls *)",
+      "Bash(git -C \"C:\\\\Users\\\\snejman\\\\Projects\\\\tehilim-app\" diff --staged)",
+      "Bash(git -C \"C:\\\\Users\\\\snejman\\\\Projects\\\\tehilim-app\" diff)",
+      "Bash(git *)"
     ]
   }
 }
