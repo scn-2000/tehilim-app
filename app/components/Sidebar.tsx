@@ -93,18 +93,25 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
     return merged;
   }
 
+  function mergeAndSaveBookmarks(cloudBookmarks: number[]): number[] {
+    const local = JSON.parse(localStorage.getItem('bookmarks') || '[]') as number[];
+    const merged = [...new Set([...cloudBookmarks, ...local])];
+    localStorage.setItem('bookmarks', JSON.stringify(merged));
+    return merged;
+  }
+
   async function autoSync(userId: string) {
     // Small delay so any in-flight createList saves reach localStorage before we sync
     await new Promise(r => setTimeout(r, 500));
     await syncBookmarksToCloud(userId);
     await syncListsToCloud(userId);
     const cloudBookmarks = await loadBookmarksFromCloud(userId);
-    localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
+    const mergedBookmarks = mergeAndSaveBookmarks(cloudBookmarks);
     const cloudLists = await loadListsFromCloud(userId) as PsalmList[];
     // Use getLists() at merge time (not a pre-snapshot) so lists created during the delay survive
     const merged = await mergeAndSaveLists(cloudLists);
     console.log('[Sidebar] autoSync done: cloud:', cloudLists.length, 'local-only:', merged.length - cloudLists.length, 'total:', merged.length);
-    setBookmarks(cloudBookmarks);
+    setBookmarks(mergedBookmarks);
     setLists(merged);
   }
 
@@ -114,10 +121,10 @@ export default function Sidebar({ isOpen, onClose, darkMode, psalmNum }: Sidebar
     await syncBookmarksToCloud(user.id);
     await syncListsToCloud(user.id);
     const cloudBookmarks = await loadBookmarksFromCloud(user.id);
-    localStorage.setItem('bookmarks', JSON.stringify(cloudBookmarks));
+    const mergedBookmarks = mergeAndSaveBookmarks(cloudBookmarks);
     const cloudLists = await loadListsFromCloud(user.id) as PsalmList[];
     const merged = await mergeAndSaveLists(cloudLists);
-    setBookmarks(cloudBookmarks);
+    setBookmarks(mergedBookmarks);
     setLists(merged);
     setSyncing(false);
   }

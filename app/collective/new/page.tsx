@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
+import { getUser } from '../../lib/auth';
 import Logo from '../../components/Logo';
 import Sidebar from '../../components/Sidebar';
 import LanguageSelector from '../../components/LanguageSelector';
 
 export default function NewCollectiveReadingPage() {
   const router = useRouter();
+  const [authReady, setAuthReady] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [dedicatedTo, setDedicatedTo] = useState('');
@@ -17,6 +19,16 @@ export default function NewCollectiveReadingPage() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    getUser().then(u => {
+      if (!u) {
+        router.replace('/auth');
+      } else {
+        setAuthReady(true);
+      }
+    });
+  }, []);
 
   const bg = '#fdf6ec';
   const border = '#e8d5b5';
@@ -57,6 +69,8 @@ export default function NewCollectiveReadingPage() {
       router.replace(`/collective/${id}`);
     }
   }
+
+  if (!authReady) return <div style={{ minHeight: '100vh', background: bg }} />;
 
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
