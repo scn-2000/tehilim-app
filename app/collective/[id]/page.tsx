@@ -53,7 +53,7 @@ export default function CollectiveReadingPage() {
         setSavedName(accountName);
         localStorage.setItem('tehilim_user_name', accountName);
       } else {
-        const stored = localStorage.getItem('tehilim_user_name');
+        const stored = localStorage.getItem('collective_guest_name');
         if (stored) { setUserName(stored); setSavedName(stored); }
       }
     }
@@ -131,7 +131,7 @@ export default function CollectiveReadingPage() {
     const name = nameInput.trim();
     setUserName(name);
     setSavedName(name);
-    localStorage.setItem('tehilim_user_name', name);
+    localStorage.setItem('collective_guest_name', name);
     const joined = JSON.parse(localStorage.getItem('my_collectives') || '[]');
     if (!joined.find((c: {id: string}) => c.id === id)) {
       joined.push({ id, name: reading?.name || '', role: 'participant' });
@@ -279,9 +279,14 @@ export default function CollectiveReadingPage() {
                   <p style={{ fontSize: '15px', fontWeight: '500', color: isMyPsalm ? 'white' : textPrimary, marginBottom: '4px' }}>{num}</p>
                 </div>
                 <div style={{ padding: '0 6px 8px', textAlign: 'center' }}>
-                  <p style={{ fontSize: '10px', color: isMyPsalm ? 'rgba(255,255,255,0.85)' : textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p style={{ fontSize: '10px', color: isMyPsalm ? 'rgba(255,255,255,0.85)' : textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '3px' }}>
                     {claim ? claim.name : '—'}
                   </p>
+                  <a href={`/psalm/${num}`} target="_blank" rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
+                    style={{ fontSize: '9px', color: isMyPsalm ? 'rgba(255,255,255,0.65)' : textMuted, textDecoration: 'underline', display: 'inline-block' }}>
+                    Read
+                  </a>
                 </div>
               </div>
             );

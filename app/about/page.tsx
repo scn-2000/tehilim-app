@@ -28,6 +28,38 @@ export default function AboutPage() {
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
       <div style={{ maxWidth: '700px', margin: '0 auto', padding: '40px 24px 80px' }}>
+
+        <div style={{ border: `1px solid ${goldAccent}`, background: surface, borderRadius: '12px', padding: '24px 28px', marginBottom: '40px', textAlign: 'center' }}>
+          <p style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
+            This site was created
+          </p>
+          <p
+            style={{
+              fontSize: '24px',
+              fontFamily: "var(--font-frank-ruhl-libre), 'Frank Ruhl Libre', serif",
+              fontWeight: '400',
+              color: textPrimary,
+              marginBottom: '4px',
+              direction: 'rtl',
+            }}
+          >
+            לעילוי נשמת
+          </p>
+          <p style={{ fontSize: '13px', color: textMuted, marginBottom: '20px', fontStyle: 'italic' }}>
+            Leilouï Nichmat
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+            {LEILUI_NAMES.map((name) => (
+              <p key={name} style={{ fontSize: '14px', color: textMuted, lineHeight: 1.6, maxWidth: '420px', margin: 0 }}>
+                {name}
+              </p>
+            ))}
+          </div>
+          <p style={{ marginTop: '20px', fontSize: '12px', color: goldAccent, letterSpacing: '0.08em' }}>
+            ז״ל — May their memory be a blessing
+          </p>
+        </div>
+
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>
           About
         </p>
@@ -78,51 +110,6 @@ export default function AboutPage() {
           </p>
         </section>
 
-        <div style={{ height: '1px', background: border, marginBottom: '48px' }} />
-
-        <section>
-          <div style={{ borderTop: `2px solid ${goldAccent}`, paddingTop: '36px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '12px' }}>
-              This page was written
-            </p>
-            <p
-              style={{
-                fontSize: '28px',
-                fontFamily: "var(--font-frank-ruhl-libre), 'Frank Ruhl Libre', serif",
-                fontWeight: '400',
-                color: textPrimary,
-                marginBottom: '6px',
-                direction: 'rtl',
-              }}
-            >
-              לעילוי נשמת
-            </p>
-            <p style={{ fontSize: '14px', color: textMuted, marginBottom: '32px', fontStyle: 'italic' }}>
-              Leilouï Nichmat
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-              {LEILUI_NAMES.map((name) => (
-                <p
-                  key={name}
-                  style={{
-                    fontSize: '15px',
-                    color: textMuted,
-                    lineHeight: 1.6,
-                    maxWidth: '420px',
-                    margin: 0,
-                  }}
-                >
-                  {name}
-                </p>
-              ))}
-            </div>
-
-            <p style={{ marginTop: '36px', fontSize: '13px', color: goldAccent, letterSpacing: '0.08em' }}>
-              ז״ל — May their memory be a blessing
-            </p>
-          </div>
-        </section>
       </div>
     </div>
   );

@@ -198,7 +198,8 @@ export default function Navigation() {
               onClick={() => router.push('/about')}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: '13px', color: textMuted, fontFamily: 'inherit',
+                fontSize: '13px', fontWeight: '600', fontFamily: 'inherit',
+                color: highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810',
                 padding: '0 4px', whiteSpace: 'nowrap',
               }}>
               About
