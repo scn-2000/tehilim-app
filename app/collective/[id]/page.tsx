@@ -3,9 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
-import Logo from '../../components/Logo';
-import Sidebar from '../../components/Sidebar';
-import LanguageSelector from '../../components/LanguageSelector';
+import { useSettings } from '../../lib/settings';
 
 interface Claim {
   psalmNum: number;
@@ -26,6 +24,7 @@ interface CollectiveReading {
 export default function CollectiveReadingPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { darkMode, highContrast } = useSettings();
   const [reading, setReading] = useState<CollectiveReading | null>(null);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('');
@@ -35,16 +34,14 @@ export default function CollectiveReadingPage() {
   const [pendingPsalm, setPendingPsalm] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const nameRef = useRef<HTMLDivElement>(null);
 
-  const bg = '#fdf6ec';
-  const surface = '#fff8ee';
-  const border = '#e8d5b5';
-  const textPrimary = '#2c1810';
-  const textMuted = '#7c6248';
-  const goldAccent = '#c9a96e';
+  const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
+  const surface = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
+  const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
+  const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#7c6248';
+  const goldAccent = highContrast ? '#000000' : '#c9a96e';
   const englishColor = '#1e4d2b';
 
   useEffect(() => {
@@ -63,13 +60,6 @@ export default function CollectiveReadingPage() {
     loadName();
     fetchReading();
   }, [id]);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -188,9 +178,6 @@ export default function CollectiveReadingPage() {
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
 
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
-
-      {/* Name prompt */}
       {showNamePrompt && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div ref={nameRef} style={{ background: surface, border: `1px solid ${border}`, borderRadius: '16px', padding: '32px', width: '320px', boxShadow: '0 16px 48px rgba(0,0,0,0.2)' }}>
@@ -214,37 +201,26 @@ export default function CollectiveReadingPage() {
         </div>
       )}
 
-      {/* Header */}
-      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '0 12px' : '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100, height: '56px', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', height: '44px', width: '44px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
-          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, height: '44px', display: 'flex', alignItems: 'center' }}>
-            <Logo size={28} />
-          </button>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px', flexWrap: 'nowrap', minWidth: 0 }}>
-          {justSaved && <span style={{ fontSize: '12px', color: englishColor, fontStyle: 'italic', flexShrink: 0 }}>✓ Saved</span>}
-          {savedName && !isMobile && <span style={{ fontSize: '13px', color: textMuted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>Reading as <strong style={{ color: textPrimary }}>{savedName}</strong></span>}
-          <button onClick={handleShare}
-            style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: isMobile ? '0 10px' : '0 14px', height: '36px', cursor: 'pointer', fontSize: isMobile ? '12px' : '13px', color: 'white', fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }}>
-            Share
-          </button>
-          <button onClick={() => router.push('/')}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: isMobile ? '0 10px' : '0 14px', height: '36px', cursor: 'pointer', fontSize: isMobile ? '12px' : '13px', color: textPrimary, fontFamily: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 }}>
-            {isMobile ? 'Home' : 'Back to Home'}
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px 0' }}>
-        <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>Collective Reading</p>
-        <h1 style={{ fontSize: '36px', fontWeight: '400', marginBottom: '8px' }}>{reading.name}</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', gap: '12px' }}>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>Collective Reading</p>
+            <h1 style={{ fontSize: '36px', fontWeight: '400', marginBottom: '8px' }}>{reading.name}</h1>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginTop: '28px' }}>
+            {justSaved && <span style={{ fontSize: '12px', color: englishColor, fontStyle: 'italic' }}>✓ Saved</span>}
+            <button onClick={handleShare}
+              style={{ background: goldAccent, border: 'none', borderRadius: '8px', padding: '0 14px', height: '36px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              Share
+            </button>
+          </div>
+        </div>
+
+        {savedName && (
+          <p style={{ fontSize: '13px', color: textMuted, marginBottom: '8px' }}>
+            Reading as <strong style={{ color: textPrimary }}>{savedName}</strong>
+          </p>
+        )}
         {reading.dedicated_to && <p style={{ fontSize: '16px', color: goldAccent, marginBottom: '8px', fontStyle: 'italic' }}>Dedicated to: {reading.dedicated_to}</p>}
         {reading.description && <p style={{ fontSize: '15px', color: textMuted, marginBottom: '12px' }}>{reading.description}</p>}
         {(reading.start_date || reading.end_date) && (
@@ -256,7 +232,6 @@ export default function CollectiveReadingPage() {
         )}
         <div style={{ width: '48px', height: '2px', background: goldAccent, margin: '16px 0 24px' }} />
 
-        {/* Progress */}
         <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
             <span style={{ fontSize: '14px', color: textPrimary, fontWeight: '500' }}>{totalClaimed} / {totalPsalms} psalms claimed</span>
@@ -272,7 +247,6 @@ export default function CollectiveReadingPage() {
           )}
         </div>
 
-        {/* Participants */}
         {participants.length > 0 && (
           <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
             <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Participants</p>
@@ -287,13 +261,11 @@ export default function CollectiveReadingPage() {
           </div>
         )}
 
-        {/* Instructions */}
         <p style={{ fontSize: '14px', color: textMuted, marginBottom: '20px', fontStyle: 'italic' }}>
           Click a psalm to commit to reading it. Click again to unclaim.
           {!savedName && ' You will be asked for your name when you first claim a psalm.'}
         </p>
 
-        {/* Psalm grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '60px' }}>
           {Array.from({ length: 150 }, (_, i) => i + 1).map(num => {
             const claim = reading.claims?.find(c => c.psalmNum === num);

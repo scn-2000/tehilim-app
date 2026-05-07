@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import { getUser } from '../../lib/auth';
-import Logo from '../../components/Logo';
-import Sidebar from '../../components/Sidebar';
-import LanguageSelector from '../../components/LanguageSelector';
+import { useSettings } from '../../lib/settings';
 
 export default function NewCollectiveReadingPage() {
   const router = useRouter();
+  const { darkMode, highContrast } = useSettings();
   const [authReady, setAuthReady] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -18,7 +17,6 @@ export default function NewCollectiveReadingPage() {
   const [endDate, setEndDate] = useState('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     getUser().then(u => {
@@ -30,11 +28,11 @@ export default function NewCollectiveReadingPage() {
     });
   }, []);
 
-  const bg = '#fdf6ec';
-  const border = '#e8d5b5';
-  const textPrimary = '#2c1810';
-  const textMuted = '#7c6248';
-  const goldAccent = '#c9a96e';
+  const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
+  const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
+  const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#7c6248';
+  const goldAccent = highContrast ? '#000000' : '#c9a96e';
 
   const inputStyle = {
     width: '100%', padding: '10px 12px', borderRadius: '8px',
@@ -74,29 +72,12 @@ export default function NewCollectiveReadingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
-
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
-
-      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
-          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <Logo size={28} />
-          </button>
-          <button onClick={() => router.back()}
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-            ← Back
-          </button>
-        </div>
-        <LanguageSelector />
-      </div>
-
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '40px 24px' }}>
+        <button onClick={() => router.back()}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, fontSize: '13px', fontFamily: 'inherit', padding: '0 0 24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          ← Back
+        </button>
+
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>New</p>
         <h1 style={{ fontSize: '32px', fontWeight: '400', marginBottom: '32px' }}>Collective Reading</h1>
 

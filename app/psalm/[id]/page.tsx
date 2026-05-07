@@ -2,12 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import Logo from '../../components/Logo';
 import { getCategoryBySlug } from '../../lib/categories';
-import { getLists, createList, deleteList, addPsalmToList, removePsalmFromList, encodeListForSharing, decodeSharedList, PsalmList } from '../../lib/lists';
+import { getLists, addPsalmToList, removePsalmFromList, decodeSharedList, PsalmList } from '../../lib/lists';
 import { getUser, addBookmarkToCloud, removeBookmarkFromCloud } from '../../lib/auth';
 import { useTranslations } from '../../lib/i18n';
-import LanguageSelector from '../../components/LanguageSelector';
+import { useSettings } from '../../lib/settings';
 
 function stripHtml(html: string): string {
   return html
@@ -17,7 +16,6 @@ function stripHtml(html: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
-
 
 function usePersistentState<T>(key: string, defaultValue: T) {
   const [state, setState] = useState<T>(defaultValue);
@@ -41,11 +39,6 @@ function saveSet(key: string, arr: number[]) {
   try { localStorage.setItem(key, JSON.stringify(arr)); } catch {}
 }
 
-const IconMenu = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-  </svg>
-);
 const IconBookmark = ({ filled }: { filled: boolean }) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -61,11 +54,6 @@ const IconSettings = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="3"/>
     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-  </svg>
-);
-const IconClose = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
   </svg>
 );
 const IconLink = () => (
@@ -117,6 +105,7 @@ const PSALM_HEBREW: Record<number, string> = (() => {
 export default function PsalmPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { darkMode, highContrast, fontSize } = useSettings();
   const [hebrew, setHebrew] = useState<string[]>([]);
   const [english, setEnglish] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
@@ -124,24 +113,14 @@ export default function PsalmPage() {
   const [showHebrew, setShowHebrew] = usePersistentState('pref_hebrew', true);
   const [showEnglish, setShowEnglish] = usePersistentState('pref_english', false);
   const [showPhonetics, setShowPhonetics] = usePersistentState('pref_phonetics', true);
-  const [fontSize, setFontSize] = usePersistentState('pref_fontsize', 'medium');
-  const [darkMode, setDarkMode] = usePersistentState('pref_darkmode', false);
-  const [highContrast, setHighContrast] = usePersistentState('pref_highcontrast', false);
   const { t } = useTranslations();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [psalmDropdownOpen, setPsalmDropdownOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarTab, setSidebarTab] = useState<'bookmarks' | 'lists' | 'collective'>('bookmarks');
   const [lists, setLists] = useState<PsalmList[]>([]);
-  const [creatingList, setCreatingList] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [newListDesc, setNewListDesc] = useState('');
-  const [myCollectives, setMyCollectives] = useState<{id: string; name: string; role: string}[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
@@ -197,9 +176,7 @@ export default function PsalmPage() {
       });
     const bm = getSet('bookmarks');
     setIsBookmarked(bm.includes(psalmNum));
-    setBookmarks(bm);
     setLists(getLists());
-    setMyCollectives(JSON.parse(localStorage.getItem('my_collectives') || '[]'));
     getUser().then(u => setUserId(u?.id ?? null));
   }, [id]);
 
@@ -208,7 +185,7 @@ export default function PsalmPage() {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setSettingsOpen(false);
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setPsalmDropdownOpen(false);
       if (shareRef.current && !shareRef.current.contains(e.target as Node)) setShareOpen(false);
-      if (saveRef.current && !saveRef.current.contains(e.target as Node)) { setSaveOpen(false); setCreatingList(false); }
+      if (saveRef.current && !saveRef.current.contains(e.target as Node)) setSaveOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -228,27 +205,12 @@ export default function PsalmPage() {
     const updated = adding ? [...arr, psalmNum] : arr.filter(n => n !== psalmNum);
     saveSet('bookmarks', updated);
     setIsBookmarked(adding);
-    setBookmarks(updated);
     if (userId) {
       if (adding) addBookmarkToCloud(userId, psalmNum);
       else removeBookmarkFromCloud(userId, psalmNum);
     } else if (adding) {
       triggerSyncToast();
     }
-  }
-
-  function handleCreateList() {
-    if (!newListName.trim()) return;
-    createList(newListName.trim(), newListDesc.trim());
-    setLists(getLists());
-    setNewListName('');
-    setNewListDesc('');
-    setCreatingList(false);
-  }
-
-  function handleDeleteList(listId: string) {
-    deleteList(listId);
-    setLists(getLists());
   }
 
   function handleToggleInList(listId: string) {
@@ -293,17 +255,6 @@ export default function PsalmPage() {
     setFeedbackOpen(false);
     setFeedbackMessage('');
     setFeedbackSent(false);
-  }
-
-  function handleShareList(list: PsalmList) {
-    const encoded = encodeListForSharing(list);
-    const url = `https://tehilimforall.com/list/${encoded}`;
-    if (navigator.share) {
-      navigator.share({ title: `${list.name} — TehilimForAll`, url });
-    } else {
-      navigator.clipboard.writeText(url);
-      alert('List link copied!');
-    }
   }
 
   function handleShare(type: 'link' | 'text') {
@@ -361,304 +312,97 @@ export default function PsalmPage() {
   return (
     <div style={{ minHeight: '100vh', background: bg, color: textPrimary, fontFamily: "var(--font-lora), Georgia, serif", transition: 'background 0.3s' }}>
 
-      {sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300 }} />
-      )}
+      {/* Psalm toolbar — sticky below global nav */}
+      <div style={{ position: 'sticky', top: '96px', zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '10px 12px' : '12px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px', marginBottom: isMobile ? '8px' : '0' }}>
 
-      {/* Sidebar */}
-      <div style={{
-        position: 'fixed', top: 0, left: 0, height: '100vh', width: 'min(300px, 85vw)',
-        background: surface, borderRight: `1px solid ${border}`,
-        zIndex: 400, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.3s ease', display: 'flex', flexDirection: 'column',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${border}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button onClick={() => { router.push('/'); setSidebarOpen(false); }} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <Logo size={28} />
+          {/* Save/Bookmark dropdown */}
+          <div ref={saveRef} style={{ position: 'relative' }}>
+            <button onClick={() => setSaveOpen(!saveOpen)} aria-label={isBookmarked ? 'Saved — manage saves' : 'Save psalm'} aria-expanded={saveOpen} style={hdrBtn(isBookmarked, goldAccent)}>
+              <IconBookmark filled={isBookmarked} />
             </button>
-            <span style={{ fontSize: '15px', fontWeight: '500', color: textPrimary }}>TehilimForAll</span>
-          </div>
-          <button onClick={() => setSidebarOpen(false)} aria-label="Close panel" style={{ background: 'none', border: 'none', cursor: 'pointer', color: textMuted, padding: '4px' }}>
-            <IconClose />
-          </button>
-        </div>
+            {saveOpen && (
+              <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '240px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 10px 8px' }}>{t.save.to}</p>
 
-        <div style={{ display: 'flex', borderBottom: `1px solid ${border}` }}>
-          {(['bookmarks', 'lists', 'collective'] as const).map(tab => (
-            <button key={tab} onClick={() => setSidebarTab(tab)}
-              style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: sidebarTab === tab ? `2px solid ${goldAccent}` : '2px solid transparent', cursor: 'pointer', fontSize: '13px', fontWeight: sidebarTab === tab ? '600' : '400', color: sidebarTab === tab ? textPrimary : textMuted, fontFamily: 'inherit', textTransform: 'capitalize' }}>
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
-          {sidebarTab === 'bookmarks' && (
-            <>
-              <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>{t.sidebar.bookmarksTab}</p>
-              {bookmarks.length === 0 ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>{t.sidebar.noBookmarks}</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {bookmarks.sort((a, b) => a - b).map(num => (
-                    <button key={num} onClick={() => { router.push(`/psalm/${num}`); setSidebarOpen(false); }}
-                      style={{ background: num === psalmNum ? goldAccent : 'transparent', border: `1px solid ${num === psalmNum ? goldAccent : border}`, borderRadius: '8px', padding: '10px 14px', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: num === psalmNum ? 'white' : textPrimary, fontFamily: 'inherit' }}>
-                      Psalm {num}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {sidebarTab === 'lists' && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.sidebar.myLists}</p>
-                <button onClick={() => setCreatingList(true)}
-                  style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <IconPlus /> {t.sidebar.newList}
-                </button>
-              </div>
-
-              {creatingList && (
-                <div style={{ background: darkMode ? '#3a2510' : '#fef9f0', border: `1px solid ${border}`, borderRadius: '10px', padding: '14px', marginBottom: '12px' }}>
-                  <p style={{ fontSize: '13px', color: textPrimary, marginBottom: '8px', fontWeight: '500' }}>{t.sidebar.newListTitle}</p>
-                  <input value={newListName} onChange={e => setNewListName(e.target.value)}
-                    placeholder={t.sidebar.listNamePlaceholder} onKeyDown={e => { if (e.key === 'Enter') handleCreateList(); }}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '14px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none' }} />
-                  <textarea value={newListDesc} onChange={e => setNewListDesc(e.target.value)}
-                    placeholder={t.sidebar.descPlaceholder} rows={2}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: `1px solid ${border}`, background: surface, color: textPrimary, fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box' as const, marginBottom: '8px', outline: 'none', resize: 'none' }} />
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={handleCreateList}
-                      style={{ flex: 1, padding: '7px', background: goldAccent, border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'white', fontFamily: 'inherit' }}>
-                      {t.sidebar.create}
-                    </button>
-                    <button onClick={() => { setCreatingList(false); setNewListName(''); setNewListDesc(''); }}
-                      style={{ flex: 1, padding: '7px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: textPrimary, fontFamily: 'inherit' }}>
-                      {t.sidebar.cancel}
-                    </button>
+                <button onClick={() => { toggleBookmark(); setSaveOpen(false); }}
+                  style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <IconBookmark filled={isBookmarked} />
+                    <span>{t.save.bookmarks}</span>
                   </div>
-                </div>
-              )}
+                  {isBookmarked && <span style={{ color: goldAccent }}><IconCheck /></span>}
+                </button>
 
-              {lists.length === 0 && !creatingList ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic' }}>{t.sidebar.noLists}</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {lists.map(list => (
-                    <div key={list.id} style={{ border: `1px solid ${border}`, borderRadius: '10px', overflow: 'hidden' }}>
-                      <button onClick={() => { router.push(`/list/${list.id}`); setSidebarOpen(false); }}
-                        style={{ width: '100%', padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
-                        <div>
-                          <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px', fontFamily: 'inherit' }}>{list.name}</p>
-                          {list.description && <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic', marginBottom: '2px', fontFamily: 'inherit' }}>{list.description}</p>}
-                          <p style={{ fontSize: '12px', color: textMuted, fontFamily: 'inherit' }}>{list.psalms.length} {list.psalms.length !== 1 ? t.sidebar.psalms : t.sidebar.psalm}</p>
-                        </div>
-                        <span style={{ color: textMuted, fontSize: '16px' }}>›</span>
-                      </button>
-                      <div style={{ borderTop: `1px solid ${border}`, padding: '8px 14px', background: darkMode ? '#2a1a0a' : '#faf4ea', display: 'flex', gap: '6px' }}>
-                        <button onClick={() => handleToggleInList(list.id)}
-                          style={{ flex: 1, padding: '6px', background: list.psalms.includes(psalmNum) ? 'none' : goldAccent, border: `1px solid ${list.psalms.includes(psalmNum) ? border : goldAccent}`, borderRadius: '6px', cursor: 'pointer', fontSize: '12px', color: list.psalms.includes(psalmNum) ? textMuted : 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                          {list.psalms.includes(psalmNum) ? <><IconCheck /> {t.sidebar.remove}</> : <><IconPlus /> {t.sidebar.addPsalm} {psalmNum}</>}
-                        </button>
-                        <button onClick={() => handleShareList(list)} aria-label={`Share list ${list.name}`}
-                          style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
-                          <IconPaperPlane />
-                        </button>
-                        <button onClick={() => handleDeleteList(list.id)} aria-label={`Delete list ${list.name}`}
-                          style={{ padding: '6px 10px', background: 'none', border: `1px solid ${border}`, borderRadius: '6px', cursor: 'pointer', color: textMuted }}>
-                          <IconClose />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        {sidebarTab === 'collective' && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <p style={{ fontSize: '12px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t.sidebar.collectiveReading}</p>
-                <button onClick={() => { router.push('/collective/new'); setSidebarOpen(false); }}
-                  style={{ background: goldAccent, border: 'none', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer', fontSize: '12px', color: 'white', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <IconPlus /> {t.sidebar.new}
+                {lists.length > 0 && <div style={{ height: '1px', background: border, margin: '4px 8px' }} />}
+
+                {lists.map(list => (
+                  <button key={list.id} onClick={() => handleToggleInList(list.id)}
+                    style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{list.name}</span>
+                    {list.psalms.includes(psalmNum) && <span style={{ color: goldAccent }}><IconCheck /></span>}
+                  </button>
+                ))}
+
+                <div style={{ height: '1px', background: border, margin: '4px 8px' }} />
+                <button onClick={() => { router.push('/lists'); setSaveOpen(false); }}
+                  style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: goldAccent, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IconPlus /> {t.save.newList}
                 </button>
               </div>
-
-              {myCollectives.length === 0 ? (
-                <p style={{ fontSize: '14px', color: textMuted, fontStyle: 'italic', marginBottom: '16px' }}>{t.sidebar.noCollectives}</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                  {myCollectives.map((c: {id: string; name: string; role: string}) => (
-                    <button key={c.id} onClick={() => { router.push(`/collective/${c.id}`); setSidebarOpen(false); }}
-                      style={{ padding: '10px 14px', background: 'transparent', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <p style={{ fontSize: '14px', color: textPrimary, fontWeight: '500', marginBottom: '2px' }}>{c.name}</p>
-                        <p style={{ fontSize: '11px', color: textMuted, textTransform: 'capitalize' }}>{c.role}</p>
-                      </div>
-                      <span style={{ color: textMuted }}>›</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <p style={{ fontSize: '12px', color: textMuted, fontStyle: 'italic' }}>
-                Join others in reading all 150 psalms together.
-              </p>
-            </>
-          )}
-        </div>
-
-        <div style={{ padding: '16px 20px', borderTop: `1px solid ${border}` }}>
-          <button onClick={() => { router.push('/'); setSidebarOpen(false); }}
-            style={{ width: '100%', padding: '10px', background: 'none', border: `1px solid ${border}`, borderRadius: '8px', cursor: 'pointer', fontSize: '14px', color: textPrimary, fontFamily: 'inherit' }}>
-            {t.sidebar.allPsalms}
-          </button>
-        </div>
-      </div>
-
-      {/* Top bar */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 100, background: bg, borderBottom: `1px solid ${border}`, padding: isMobile ? '10px 12px' : '12px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '8px' : '0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => setSidebarOpen(true)} aria-label="Open menu" style={{ ...hdrBtn(), padding: '7px 9px' }}>
-              <IconMenu />
-            </button>
-            <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <Logo size={28} />
-            </button>
-            {!isMobile && (
-              <button onClick={() => router.push('/')}
-                style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', color: textPrimary, fontSize: '13px', fontFamily: 'inherit' }}>
-                {t.allPsalms}
-              </button>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-
-            <LanguageSelector border={border} surface={surface} textPrimary={textPrimary} textMuted={textMuted} />
-
-            {/* Save/Bookmark dropdown */}
-            <div ref={saveRef} style={{ position: 'relative' }}>
-              <button onClick={() => setSaveOpen(!saveOpen)} aria-label={isBookmarked ? 'Saved — manage saves' : 'Save psalm'} aria-expanded={saveOpen} style={hdrBtn(isBookmarked, goldAccent)}>
-                <IconBookmark filled={isBookmarked} />
-              </button>
-              {saveOpen && (
-                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '240px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
-                  <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 10px 8px' }}>{t.save.to}</p>
-
-                  {/* Bookmarks */}
-                  <button onClick={() => { toggleBookmark(); setSaveOpen(false); }}
-                    style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <IconBookmark filled={isBookmarked} />
-                      <span>{t.save.bookmarks}</span>
-                    </div>
-                    {isBookmarked && <span style={{ color: goldAccent }}><IconCheck /></span>}
-                  </button>
-
-                  {lists.length > 0 && <div style={{ height: '1px', background: border, margin: '4px 8px' }} />}
-
-                  {/* Lists */}
-                  {lists.map(list => (
-                    <button key={list.id} onClick={() => handleToggleInList(list.id)}
-                      style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span>{list.name}</span>
-                      {list.psalms.includes(psalmNum) && <span style={{ color: goldAccent }}><IconCheck /></span>}
-                    </button>
-                  ))}
-
-                  <div style={{ height: '1px', background: border, margin: '4px 8px' }} />
-                  <button onClick={() => { setSidebarOpen(true); setSidebarTab('lists'); setCreatingList(true); setSaveOpen(false); }}
-                    style={{ width: '100%', padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: goldAccent, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <IconPlus /> {t.save.newList}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Share */}
-            <div ref={shareRef} style={{ position: 'relative' }}>
-              <button onClick={() => setShareOpen(!shareOpen)} aria-label="Share psalm" aria-expanded={shareOpen} style={hdrBtn()}>
-                <IconPaperPlane />
-              </button>
-              {shareOpen && (
-                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '190px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
-                  <button onClick={() => { handleShare('link'); setShareOpen(false); }}
-                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <IconLink /> {t.share.link}
-                  </button>
-                  <button onClick={() => { handleShare('text'); setShareOpen(false); }}
-                    style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <IconCopy /> {t.share.text}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Feedback */}
-            <button onClick={openFeedback} aria-label="Send feedback" style={hdrBtn()}>
-              <IconSpeechBubble />
+          {/* Share */}
+          <div ref={shareRef} style={{ position: 'relative' }}>
+            <button onClick={() => setShareOpen(!shareOpen)} aria-label="Share psalm" aria-expanded={shareOpen} style={hdrBtn()}>
+              <IconPaperPlane />
             </button>
+            {shareOpen && (
+              <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '8px', width: '190px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
+                <button onClick={() => { handleShare('link'); setShareOpen(false); }}
+                  style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <IconLink /> {t.share.link}
+                </button>
+                <button onClick={() => { handleShare('text'); setShareOpen(false); }}
+                  style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '14px', color: textPrimary, fontFamily: 'inherit', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <IconCopy /> {t.share.text}
+                </button>
+              </div>
+            )}
+          </div>
 
-            {/* Settings */}
-            <div ref={settingsRef} style={{ position: 'relative' }}>
-              <button onClick={() => setSettingsOpen(!settingsOpen)} aria-label="Settings" aria-expanded={settingsOpen} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')}>
-                <IconSettings />
-              </button>
-              {settingsOpen && (
-                <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '20px', width: '260px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
-                  <p style={{ fontSize: '13px', fontWeight: '600', color: textMuted, marginBottom: '16px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t.settings.title}</p>
-                  {[
-                    { label: t.settings.hebrew, value: showHebrew, set: setShowHebrew },
-                    { label: t.settings.english, value: showEnglish, set: setShowEnglish },
-                    { label: t.settings.phonetics, value: showPhonetics, set: setShowPhonetics },
-                  ].map(({ label, value, set }) => (
-                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                      <span style={{ fontSize: '15px', color: textPrimary }}>{label}</span>
-                      <button style={settingToggle(value)} onClick={() => set(!value)}>
-                        <div style={toggleKnob} />
-                      </button>
-                    </div>
-                  ))}
-                  <div style={{ borderTop: `1px solid ${border}`, margin: '16px 0' }} />
-                  <p style={{ fontSize: '13px', color: textMuted, marginBottom: '10px' }}>{t.settings.fontSize}</p>
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                    {(['small', 'medium', 'large'] as const).map(size => (
-                      <button key={size} onClick={() => setFontSize(size)}
-                        style={{ flex: 1, padding: '6px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', border: `1px solid ${fontSize === size ? goldAccent : border}`, background: fontSize === size ? goldAccent : 'transparent', color: fontSize === size ? 'white' : textPrimary }}>
-                        {{ small: t.settings.small, medium: t.settings.medium, large: t.settings.large }[size]}
-                      </button>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <span style={{ fontSize: '15px', color: textPrimary }}>{t.settings.darkMode}</span>
-                    <button style={settingToggle(darkMode)} onClick={() => { setDarkMode(!darkMode); if (!darkMode) setHighContrast(false); }}>
+          {/* Feedback */}
+          <button onClick={openFeedback} aria-label="Send feedback" style={hdrBtn()}>
+            <IconSpeechBubble />
+          </button>
+
+          {/* Settings — Hebrew/Phonetics/English only */}
+          <div ref={settingsRef} style={{ position: 'relative' }}>
+            <button onClick={() => setSettingsOpen(!settingsOpen)} aria-label="Display settings" aria-expanded={settingsOpen} style={hdrBtn(settingsOpen, darkMode ? '#3a2510' : '#f0e4cc')}>
+              <IconSettings />
+            </button>
+            {settingsOpen && (
+              <div style={{ position: 'absolute', top: '44px', right: 0, background: surface, border: `1px solid ${border}`, borderRadius: '12px', padding: '20px', width: '220px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 200 }}>
+                <p style={{ fontSize: '13px', fontWeight: '600', color: textMuted, marginBottom: '16px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{t.settings.title}</p>
+                {[
+                  { label: t.settings.hebrew, value: showHebrew, set: setShowHebrew },
+                  { label: t.settings.english, value: showEnglish, set: setShowEnglish },
+                  { label: t.settings.phonetics, value: showPhonetics, set: setShowPhonetics },
+                ].map(({ label, value, set }) => (
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <span style={{ fontSize: '15px', color: textPrimary }}>{label}</span>
+                    <button style={settingToggle(value)} onClick={() => set(!value)}>
                       <div style={toggleKnob} />
                     </button>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <div>
-                      <span style={{ fontSize: '15px', color: textPrimary }}>{t.settings.highContrast}</span>
-                      <p style={{ fontSize: '11px', color: textMuted, marginTop: '2px' }}>{t.settings.accessibility}</p>
-                    </div>
-                    <button style={settingToggle(highContrast)} onClick={() => { setHighContrast(!highContrast); if (!highContrast) setDarkMode(false); }}>
-                      <div style={toggleKnob} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Row 2: Prev | Psalm dropdown | Next — hidden when browsing a category or list */}
+        {/* Row 2: Prev | Psalm dropdown | Next */}
         {!categorySlug && !listId && <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
           <button onClick={() => router.push(`/psalm/${psalmNum - 1}`)} disabled={psalmNum <= 1} aria-label="Previous psalm"
             style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '8px 14px', cursor: psalmNum <= 1 ? 'default' : 'pointer', color: psalmNum <= 1 ? textMuted : textPrimary, fontSize: '16px', opacity: psalmNum <= 1 ? 0.4 : 1 }}>

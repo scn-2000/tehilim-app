@@ -1,16 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Logo from '../components/Logo';
-import Sidebar from '../components/Sidebar';
-import LanguageSelector from '../components/LanguageSelector';
-
-const IconMenu = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-  </svg>
-);
+import { useSettings } from '../lib/settings';
 
 const LEILUI_NAMES = [
   'Venus Nedjma bat Esther z\'l',
@@ -26,36 +16,17 @@ const LEILUI_NAMES = [
 ];
 
 export default function AboutPage() {
-  const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { darkMode, highContrast } = useSettings();
 
-  const bg = '#fdf6ec';
-  const border = '#e8d5b5';
-  const textPrimary = '#2c1810';
-  const textMuted = '#7c6248';
-  const goldAccent = '#c9a96e';
-  const surface = '#fff8ee';
+  const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
+  const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
+  const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#7c6248';
+  const goldAccent = highContrast ? '#000000' : '#c9a96e';
+  const surface = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
 
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
-
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
-
-      {/* Sticky top bar */}
-      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
-            <IconMenu />
-          </button>
-          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <Logo size={28} />
-          </button>
-        </div>
-        <LanguageSelector />
-      </div>
-
-      {/* Main content */}
       <div style={{ maxWidth: '700px', margin: '0 auto', padding: '40px 24px 80px' }}>
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>
           About
@@ -65,7 +36,6 @@ export default function AboutPage() {
         </h1>
         <div style={{ width: '48px', height: '2px', background: goldAccent, marginBottom: '40px' }} />
 
-        {/* Section 1 — What is TehilimForAll */}
         <section style={{ marginBottom: '48px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: '500', marginBottom: '16px', color: textPrimary }}>
             What is TehilimForAll?
@@ -79,8 +49,6 @@ export default function AboutPage() {
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary }}>
             Built for everyone: from fluent Hebrew readers to those who rely on phonetics to follow along. Whether you know every word by heart or are encountering the psalms for the first time, TehilimForAll meets you where you are.
           </p>
-
-          {/* Feature pills */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '24px' }}>
             {['Hebrew with nikud', 'Phonetic transliteration', 'English (JPS)', 'Bookmarks', 'Custom lists', 'Collective Reading', 'Free, no account'].map(f => (
               <span key={f} style={{ padding: '5px 12px', background: surface, border: `1px solid ${border}`, borderRadius: '20px', fontSize: '13px', color: textMuted }}>
@@ -90,10 +58,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Divider */}
         <div style={{ height: '1px', background: border, marginBottom: '48px' }} />
 
-        {/* Section 2 — What is Tehilim */}
         <section style={{ marginBottom: '48px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: '500', marginBottom: '16px', color: textPrimary }}>
             What is Tehilim?
@@ -112,10 +78,8 @@ export default function AboutPage() {
           </p>
         </section>
 
-        {/* Divider */}
         <div style={{ height: '1px', background: border, marginBottom: '48px' }} />
 
-        {/* Section 3 — Leilui Nishmat */}
         <section>
           <div style={{ borderTop: `2px solid ${goldAccent}`, paddingTop: '36px', textAlign: 'center' }}>
             <p style={{ fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '12px' }}>

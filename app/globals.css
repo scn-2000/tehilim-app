@@ -52,8 +52,6 @@ button {
    All isMobile-conditional layout is expressed here so the browser applies
    the correct geometry before first paint — no JS hydration required.       */
 
-.home-topbar { padding: 0 24px; }
-
 .home-hero { text-align: center; padding: 60px 24px 40px; }
 
 .home-hero-logo { display: flex; justify-content: center; margin-bottom: 16px; }
@@ -71,7 +69,6 @@ button {
 .home-grid-large  .psalm-btn { padding: 14px 4px; font-size: 16px; }
 
 @media (max-width: 639px) {
-  .home-topbar  { padding: 0 16px; }
   .home-hero    { padding: 40px 16px 32px; }
   .home-hero-logo svg { width: 56px; height: 56px; }
   .home-title   { font-size: 32px; }

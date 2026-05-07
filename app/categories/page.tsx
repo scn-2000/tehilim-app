@@ -1,49 +1,24 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Logo from '../components/Logo';
-import Sidebar from '../components/Sidebar';
-import LanguageSelector from '../components/LanguageSelector';
+import { useSettings } from '../lib/settings';
 import { categories, getLocalizedCategory } from '../lib/categories';
 import { useTranslations } from '../lib/i18n';
-
-const IconMenu = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-  </svg>
-);
 
 export default function CategoriesPage() {
   const router = useRouter();
   const { t, locale } = useTranslations();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { darkMode, highContrast } = useSettings();
 
-  const bg = '#fdf6ec';
-  const border = '#e8d5b5';
-  const textPrimary = '#2c1810';
-  const textMuted = '#7c6248';
-  const goldAccent = '#c9a96e';
-  const surface = '#fff8ee';
+  const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
+  const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
+  const textPrimary = highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810';
+  const textMuted = highContrast ? '#333333' : darkMode ? '#c9a96e' : '#7c6248';
+  const goldAccent = highContrast ? '#000000' : '#c9a96e';
+  const surface = highContrast ? '#f5f5f5' : darkMode ? '#2c1e0f' : '#fff8ee';
 
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "var(--font-lora), Georgia, serif", color: textPrimary }}>
-
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} darkMode={false} />
-
-      <div style={{ position: 'sticky', top: 0, background: bg, borderBottom: `1px solid ${border}`, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
-            style={{ background: 'none', border: `1px solid ${border}`, borderRadius: '8px', padding: '7px 9px', cursor: 'pointer', color: textMuted, display: 'flex', alignItems: 'center' }}>
-            <IconMenu />
-          </button>
-          <button onClick={() => router.push('/')} aria-label="TehilimForAll home" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <Logo size={28} />
-          </button>
-        </div>
-        <LanguageSelector />
-      </div>
-
       <div style={{ maxWidth: '700px', margin: '0 auto', padding: '40px 24px 80px' }}>
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>
           {t.categories.tab}

@@ -9,8 +9,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL,                       lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
     { url: `${BASE_URL}/categories`,       lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/about`,           lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${BASE_URL}/auth`,            lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
+    { url: `${BASE_URL}/bookmarks`,        lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/lists`,            lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/collective`,       lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/about`,            lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: `${BASE_URL}/auth`,             lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
   const psalmPages: MetadataRoute.Sitemap = Array.from({ length: 150 }, (_, i) => ({

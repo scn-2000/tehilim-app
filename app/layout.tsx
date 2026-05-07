@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Frank_Ruhl_Libre, Lora } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegistration from "./components/ServiceWorkerRegistration";
+import Navigation from "./components/Navigation";
+import { SettingsProvider } from "./lib/settings";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -88,7 +90,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ServiceWorkerRegistration />
-        <main>{children}</main>
+        <SettingsProvider>
+          <Navigation />
+          <main>{children}</main>
+        </SettingsProvider>
         <Analytics />
         <SpeedInsights />
       </body>
