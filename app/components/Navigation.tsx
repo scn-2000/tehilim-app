@@ -202,7 +202,7 @@ export default function Navigation() {
                 color: highContrast ? '#000000' : darkMode ? '#f5e9d4' : '#2c1810',
                 padding: '0 4px', whiteSpace: 'nowrap',
               }}>
-              About
+              {t.sidebar.aboutLink}
             </button>
           )}
 

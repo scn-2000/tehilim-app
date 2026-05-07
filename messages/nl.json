@@ -30,6 +30,7 @@
   },
   "sidebar": {
     "title": "TehilimForAll",
+    "aboutLink": "Over ons",
     "bookmarksTab": "Bladwijzers",
     "listsTab": "Lijsten",
     "collectiveTab": "Collectief",
@@ -73,11 +74,42 @@
     "beforeReading": "Voor het lezen",
     "beforeReadingNote": "Voor het lezen beginnen velen met een intentie-verklaring (L'shem yichud). Bij het lezen voor iemand anders, noem hun Hebreeuwse naam: [Naam] ben/bat [naam van de moeder]. Sluit af met een persoonlijk gebed in uw eigen woorden.",
     "readNow": "Nu lezen",
+    "readArrow": "Lees →",
     "category": "Categorie",
     "prevInCategory": "← Vorige in categorie",
     "nextInCategory": "Volgende in categorie →",
     "prevInList": "← Vorige in lijst",
     "nextInList": "Volgende in lijst →",
-    "dayNames": ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"]
+    "dayNames": ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"],
+    "shabbatNote": "Deze psalmen worden traditioneel op Shabbat gereciteerd. Links naar individuele psalmen worden hier niet gegeven — het gebruik van een telefoon of digitaal apparaat tijdens Shabbat is niet gepast. Lees alstublieft uit een sidoer of gedrukte tekst.",
+    "highHolidaysNote": "Deze psalmen worden traditioneel gereciteerd tijdens de Hoge Feestdagen. Links naar individuele psalmen worden hier niet gegeven — het gebruik van een telefoon of digitaal apparaat op Yom Tov is niet gepast. Lees alstublieft uit een machzor of sidoer.",
+    "psalmsHeading": "Psalmen",
+    "dailyTehilimTodayPrefix": "Vandaag is het dag",
+    "dailyTehilimTodaySuffix": "van de maand — uw portie is hieronder gemarkeerd.",
+    "dailyTehilimTodayLabel": "Vandaag",
+    "dailyTehilimDay": "Dag {day} — Psalmen {range}"
+  },
+  "about": {
+    "eyebrow": "Over",
+    "title": "Over TehilimForAll",
+    "leilui": {
+      "writtenFor": "Deze site werd gemaakt",
+      "phonetic": "Leilouï Nichmat",
+      "blessing": "ז״ל — Moge hun nagedachtenis een zegen zijn"
+    },
+    "section1": {
+      "title": "Wat is TehilimForAll?",
+      "p1": "TehilimForAll is een gratis platform voor het lezen van Tehilim op uw telefoon. Alle 150 psalmen zijn beschikbaar in het Hebreeuws met nikud (klinktekens), Sefardische fonetische transliteratie en Engelse vertaling (JPS). Geen advertenties, geen account vereist.",
+      "p2": "Functies omvatten bladwijzers, aangepaste leeslijsten en Collectief Lezen — waarbij een groep alle 150 psalmen verdeelt onder zijn leden. Elke persoon claimt zijn portie en leest die, terwijl een gedeelde voortgangsbalk de voltooiing van de groep in real time bijhoudt.",
+      "p3": "Gebouwd voor iedereen: van vloeiende Hebreeuwse lezers tot degenen die op fonetiek vertrouwen. Of u nu elk woord uit uw hoofd kent of de psalmen voor het eerst tegenkomt, TehilimForAll ontmoet u waar u bent.",
+      "features": ["Hebreeuws met nikud", "Fonetische transliteratie", "Engels (JPS)", "Bladwijzers", "Aangepaste lijsten", "Collectief Lezen", "Gratis, geen account"]
+    },
+    "section2": {
+      "title": "Wat zijn Tehilim?",
+      "p1": "Tehilim — het Boek der Psalmen — is een van de meest geliefde boeken van de Hebreeuwse Bijbel. Het behoort tot de Ketuvim, de Geschriften, het derde gedeelte van de Tenach. In tegenstelling tot de Torah, die geboden geeft, of de Profeten, die berispen en troosten, spreekt Tehilim in een andere richting: het is de menselijke stem die zich tot God richt. Het is gebed in zijn puurste vorm.",
+      "p2": "De traditie schrijft de psalmen toe aan koning David, de herder-dichter-koning die, in de woorden van de Talmoed, «aangenaam was in liederen en hymnen». Toch is het boek zelf inclusiever. De opschriften noemen andere auteurs — de zonen van Korach, Asaf, Mozes, Salomo — en veel psalmen dragen helemaal geen toeschrijving. David is misschien de grote architect van het boek, maar Tehilim behoort toe aan het hele volk.",
+      "p3": "Honderdvijftig psalmen die de volledige menselijke ervaring omvatten: stralende lofprijzing en gekwelde smeekbede, dankbaarheid en verdriet, verlangen, berouw, verwondering, wanhoop en onwankelbare hoop. Tehilim presenteert geen opgeruimde versie van het geestelijke leven. Het presenteert het eerlijk — wat precies de reden is waarom het heeft voortgeduurd.",
+      "p4": "In het joodse leven is Tehilim nooit ver weg. Gedeelten worden dagelijks gereciteerd in de ochtendienst; het hele boek wordt elke maand voltooid door gemeenschappen die dit op zich nemen. Psalmen worden gezegd aan het bed van zieken, voor soldaten in het veld, voor de overledenen, voor Shabbat, en in momenten van gemeenschappelijke crisis wanneer eigen woorden ontoereikend voelen. De kracht van Tehilim is precies dit: elke persoon in elke generatie vindt zijn eigen situatie weerspiegeld in de verzen. De psalm die David schreef terwijl hij zich verborg voor zijn vijanden wordt, eeuwen later, het gebed van iemand die in een ziekenhuiswachtkamer zit. De woorden zijn oud; de ervaring is onmiddellijk."
+    }
   }
 }

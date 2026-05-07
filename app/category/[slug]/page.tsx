@@ -66,12 +66,12 @@ export default function CategoryPage() {
             <div style={{ background: surface, border: `1px solid ${goldAccent}`, borderRadius: '10px', padding: '16px 18px', marginBottom: '24px' }}>
               <p style={{ fontSize: '14px', color: textPrimary, lineHeight: 1.75 }}>
                 {slug === 'shabbat'
-                  ? 'These psalms are traditionally recited on Shabbat. Links to individual psalms are not provided here — using a phone or digital device during Shabbat is not appropriate. Please read from a siddur or printed text.'
-                  : 'These psalms are traditionally recited during the High Holiday period. Links to individual psalms are not provided here — using a phone or digital device on Yom Tov is not appropriate. Please read from a machzor or siddur.'
+                  ? t.categories.shabbatNote
+                  : t.categories.highHolidaysNote
                 }
               </p>
             </div>
-            <p style={{ fontSize: '13px', color: textMuted, marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: '600' }}>Psalms</p>
+            <p style={{ fontSize: '13px', color: textMuted, marginBottom: '12px', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: '600' }}>{t.categories.psalmsHeading}</p>
             <p style={{ fontSize: '18px', color: textPrimary, lineHeight: 2.2, letterSpacing: '0.02em' }}>
               {category.psalms.join('  ·  ')}
             </p>
@@ -83,7 +83,7 @@ export default function CategoryPage() {
             <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: '10px', padding: '12px 16px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '20px' }}>📅</span>
               <p style={{ fontSize: '14px', color: textPrimary }}>
-                Today is day <strong>{todayDay}</strong> of the month — your portion is highlighted below.
+                {t.categories.dailyTehilimTodayPrefix} <strong>{todayDay}</strong> {t.categories.dailyTehilimTodaySuffix}
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -96,16 +96,16 @@ export default function CategoryPage() {
                     style={{ padding: '14px 18px', background: isToday ? goldAccent : surface, border: `1px solid ${isToday ? goldAccent : border}`, borderRadius: '10px', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       {isToday && (
-                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '600' }}>Today</p>
+                        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '600' }}>{t.categories.dailyTehilimTodayLabel}</p>
                       )}
                       <p style={{ fontSize: '15px', color: isToday ? 'white' : textPrimary, fontWeight: '500', fontFamily: 'inherit' }}>
-                        Day {day} — Psalms {range}
+                        {t.categories.dailyTehilimDay.replace('{day}', String(day)).replace('{range}', range)}
                       </p>
                       <p style={{ fontSize: '12px', color: isToday ? 'rgba(255,255,255,0.75)' : textMuted, marginTop: '2px', fontFamily: 'inherit' }}>
-                        {count} psalm{count !== 1 ? 's' : ''}
+                        {count} {count !== 1 ? t.sidebar.psalms : t.sidebar.psalm}
                       </p>
                     </div>
-                    <span style={{ color: isToday ? 'rgba(255,255,255,0.85)' : textMuted, fontSize: '13px' }}>Read →</span>
+                    <span style={{ color: isToday ? 'rgba(255,255,255,0.85)' : textMuted, fontSize: '13px' }}>{t.categories.readArrow}</span>
                   </button>
                 );
               })}

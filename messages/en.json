@@ -30,6 +30,7 @@
   },
   "sidebar": {
     "title": "TehilimForAll",
+    "aboutLink": "About",
     "bookmarksTab": "Bookmarks",
     "listsTab": "Lists",
     "collectiveTab": "Collective",
@@ -73,11 +74,42 @@
     "beforeReading": "Before Reading",
     "beforeReadingNote": "Before reading, many begin with a declaration of intent (L'shem yichud). When reading for someone else, mention their Hebrew name: [Name] ben/bat [Mother's name]. Conclude with a personal prayer in your own words.",
     "readNow": "Read Now",
+    "readArrow": "Read →",
     "category": "Category",
     "prevInCategory": "← Prev in category",
     "nextInCategory": "Next in category →",
     "prevInList": "← Prev in list",
     "nextInList": "Next in list →",
-    "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "shabbatNote": "These psalms are traditionally recited on Shabbat. Links to individual psalms are not provided here — using a phone or digital device during Shabbat is not appropriate. Please read from a siddur or printed text.",
+    "highHolidaysNote": "These psalms are traditionally recited during the High Holiday period. Links to individual psalms are not provided here — using a phone or digital device on Yom Tov is not appropriate. Please read from a machzor or siddur.",
+    "psalmsHeading": "Psalms",
+    "dailyTehilimTodayPrefix": "Today is day",
+    "dailyTehilimTodaySuffix": "of the month — your portion is highlighted below.",
+    "dailyTehilimTodayLabel": "Today",
+    "dailyTehilimDay": "Day {day} — Psalms {range}"
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "About TehilimForAll",
+    "leilui": {
+      "writtenFor": "This site was created",
+      "phonetic": "Leilouï Nichmat",
+      "blessing": "ז״ל — May their memory be a blessing"
+    },
+    "section1": {
+      "title": "What is TehilimForAll?",
+      "p1": "TehilimForAll is a free platform for reading Tehilim on your phone. All 150 psalms are available in Hebrew with nikud (vowel marks), Sephardic phonetic transliteration, and English translation (JPS). No ads, no account required.",
+      "p2": "Features include bookmarks, custom reading lists, and Collective Reading — where a group divides all 150 psalms among its members. Each person claims their portion and reads it, while a shared progress bar tracks the group's completion in real time.",
+      "p3": "Built for everyone: from fluent Hebrew readers to those who rely on phonetics to follow along. Whether you know every word by heart or are encountering the psalms for the first time, TehilimForAll meets you where you are.",
+      "features": ["Hebrew with nikud", "Phonetic transliteration", "English (JPS)", "Bookmarks", "Custom lists", "Collective Reading", "Free, no account"]
+    },
+    "section2": {
+      "title": "What is Tehilim?",
+      "p1": "Tehilim — the Book of Psalms — is one of the most beloved books of the Hebrew Bible. It belongs to the Ketuvim, the Writings, the third section of the Tanakh. Unlike the Torah, which commands, or the Prophets, who rebuke and console, Tehilim speaks in a different direction: it is the human voice addressing God. It is prayer in its purest form.",
+      "p2": "Tradition attributes the psalms to King David, the shepherd-poet-king who was, in the words of the Talmud, \"pleasant in songs and hymns.\" Yet the book itself is more inclusive. Its superscriptions name other authors — the sons of Korah, Asaph, Moses, Solomon — and many psalms carry no attribution at all. David may be the book's great architect, but Tehilim belongs to the whole people.",
+      "p3": "One hundred and fifty psalms, spanning the full range of human experience: radiant praise and anguished petition, gratitude and grief, longing, repentance, wonder, despair, and unshakeable hope. Tehilim does not present a tidied version of the spiritual life. It presents it honestly — which is precisely why it has endured.",
+      "p4": "In Jewish life, Tehilim is never far away. Portions are recited daily in the morning service; the entire book is completed each month by communities that take this upon themselves. Psalms are said at the bedside of the ill, for soldiers in the field, for the departed, before Shabbat, and in moments of communal crisis when words of one's own feel insufficient. The power of Tehilim is precisely this: every person in every generation finds their own situation reflected in its verses. The psalm that David wrote in hiding from his enemies becomes, centuries later, the prayer of someone sitting in a hospital waiting room. The words are old; the experience is immediate."
+    }
   }
 }

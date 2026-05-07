@@ -1,6 +1,7 @@
 'use client';
 
 import { useSettings } from '../lib/settings';
+import { useTranslations } from '../lib/i18n';
 
 const LEILUI_NAMES = [
   'Venus Nedjma bat Esther z\'l',
@@ -17,6 +18,7 @@ const LEILUI_NAMES = [
 
 export default function AboutPage() {
   const { darkMode, highContrast } = useSettings();
+  const { t } = useTranslations();
 
   const bg = highContrast ? '#ffffff' : darkMode ? '#1a1008' : '#fdf6ec';
   const border = highContrast ? '#000000' : darkMode ? '#5c3d1e' : '#e8d5b5';
@@ -31,7 +33,7 @@ export default function AboutPage() {
 
         <div style={{ border: `1px solid ${goldAccent}`, background: surface, borderRadius: '12px', padding: '24px 28px', marginBottom: '40px', textAlign: 'center' }}>
           <p style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
-            This site was created
+            {t.about.leilui.writtenFor}
           </p>
           <p
             style={{
@@ -46,7 +48,7 @@ export default function AboutPage() {
             לעילוי נשמת
           </p>
           <p style={{ fontSize: '13px', color: textMuted, marginBottom: '20px', fontStyle: 'italic' }}>
-            Leilouï Nichmat
+            {t.about.leilui.phonetic}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
             {LEILUI_NAMES.map((name) => (
@@ -56,33 +58,33 @@ export default function AboutPage() {
             ))}
           </div>
           <p style={{ marginTop: '20px', fontSize: '12px', color: goldAccent, letterSpacing: '0.08em' }}>
-            ז״ל — May their memory be a blessing
+            {t.about.leilui.blessing}
           </p>
         </div>
 
         <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: textMuted, marginBottom: '8px' }}>
-          About
+          {t.about.eyebrow}
         </p>
         <h1 style={{ fontSize: '36px', fontWeight: '400', marginBottom: '8px', lineHeight: 1.2 }}>
-          About TehilimForAll
+          {t.about.title}
         </h1>
         <div style={{ width: '48px', height: '2px', background: goldAccent, marginBottom: '40px' }} />
 
         <section style={{ marginBottom: '48px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: '500', marginBottom: '16px', color: textPrimary }}>
-            What is TehilimForAll?
+            {t.about.section1.title}
           </h2>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary, marginBottom: '14px' }}>
-            TehilimForAll is a free platform for reading Tehilim on your phone. All 150 psalms are available in Hebrew with nikud (vowel marks), Sephardic phonetic transliteration, and English translation (JPS). No ads, no account required.
+            {t.about.section1.p1}
           </p>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary, marginBottom: '14px' }}>
-            Features include bookmarks, custom reading lists, and <em>Collective Reading</em> — where a group divides all 150 psalms among its members. Each person claims their portion and reads it, while a shared progress bar tracks the group's completion in real time.
+            {t.about.section1.p2}
           </p>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary }}>
-            Built for everyone: from fluent Hebrew readers to those who rely on phonetics to follow along. Whether you know every word by heart or are encountering the psalms for the first time, TehilimForAll meets you where you are.
+            {t.about.section1.p3}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '24px' }}>
-            {['Hebrew with nikud', 'Phonetic transliteration', 'English (JPS)', 'Bookmarks', 'Custom lists', 'Collective Reading', 'Free, no account'].map(f => (
+            {t.about.section1.features.map(f => (
               <span key={f} style={{ padding: '5px 12px', background: surface, border: `1px solid ${border}`, borderRadius: '20px', fontSize: '13px', color: textMuted }}>
                 {f}
               </span>
@@ -94,22 +96,21 @@ export default function AboutPage() {
 
         <section style={{ marginBottom: '48px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: '500', marginBottom: '16px', color: textPrimary }}>
-            What is Tehilim?
+            {t.about.section2.title}
           </h2>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary, marginBottom: '20px' }}>
-            Tehilim — the Book of Psalms — is one of the most beloved books of the Hebrew Bible. It belongs to the Ketuvim, the Writings, the third section of the Tanakh. Unlike the Torah, which commands, or the Prophets, who rebuke and console, Tehilim speaks in a different direction: it is the human voice addressing God. It is prayer in its purest form.
+            {t.about.section2.p1}
           </p>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary, marginBottom: '20px' }}>
-            Tradition attributes the psalms to King David, the shepherd-poet-king who was, in the words of the Talmud, <em>"pleasant in songs and hymns."</em> Yet the book itself is more inclusive. Its superscriptions name other authors — the sons of Korah, Asaph, Moses, Solomon — and many psalms carry no attribution at all. David may be the book's great architect, but Tehilim belongs to the whole people.
+            {t.about.section2.p2}
           </p>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary, marginBottom: '20px' }}>
-            One hundred and fifty psalms, spanning the full range of human experience: radiant praise and anguished petition, gratitude and grief, longing, repentance, wonder, despair, and unshakeable hope. Tehilim does not present a tidied version of the spiritual life. It presents it honestly — which is precisely why it has endured.
+            {t.about.section2.p3}
           </p>
           <p style={{ fontSize: '16px', lineHeight: 1.8, color: textPrimary }}>
-            In Jewish life, Tehilim is never far away. Portions are recited daily in the morning service; the entire book is completed each month by communities that take this upon themselves. Psalms are said at the bedside of the ill, for soldiers in the field, for the departed, before Shabbat, and in moments of communal crisis when words of one's own feel insufficient. The power of Tehilim is precisely this: every person in every generation finds their own situation reflected in its verses. The psalm that David wrote in hiding from his enemies becomes, centuries later, the prayer of someone sitting in a hospital waiting room. The words are old; the experience is immediate.
+            {t.about.section2.p4}
           </p>
         </section>
-
       </div>
     </div>
   );

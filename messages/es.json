@@ -30,6 +30,7 @@
   },
   "sidebar": {
     "title": "TehilimForAll",
+    "aboutLink": "Acerca de",
     "bookmarksTab": "Favoritos",
     "listsTab": "Listas",
     "collectiveTab": "Colectivo",
@@ -73,11 +74,42 @@
     "beforeReading": "Antes de leer",
     "beforeReadingNote": "Antes de leer, muchos comienzan con una declaración de intención (L'shem yichud). Para leer en nombre de otra persona, mencione su nombre hebreo: [Nombre] ben/bat [nombre de la madre]. Concluya con una oración personal en sus propias palabras.",
     "readNow": "Leer ahora",
+    "readArrow": "Leer →",
     "category": "Categoría",
     "prevInCategory": "← Ant. en categoría",
     "nextInCategory": "Sig. en categoría →",
     "prevInList": "← Ant. en lista",
     "nextInList": "Sig. en lista →",
-    "dayNames": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    "dayNames": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+    "shabbatNote": "Estos salmos se recitan tradicionalmente en Shabat. Los enlaces a salmos individuales no se proporcionan aquí — el uso de un teléfono o dispositivo digital durante el Shabat no es apropiado. Por favor, lea desde un sidur o texto impreso.",
+    "highHolidaysNote": "Estos salmos se recitan tradicionalmente durante el período de las Grandes Fiestas. Los enlaces a salmos individuales no se proporcionan aquí — el uso de un teléfono o dispositivo digital en Yom Tov no es apropiado. Por favor, lea desde un majzor o sidur.",
+    "psalmsHeading": "Salmos",
+    "dailyTehilimTodayPrefix": "Hoy es el día",
+    "dailyTehilimTodaySuffix": "del mes — su porción está resaltada a continuación.",
+    "dailyTehilimTodayLabel": "Hoy",
+    "dailyTehilimDay": "Día {day} — Salmos {range}"
+  },
+  "about": {
+    "eyebrow": "Acerca de",
+    "title": "Acerca de TehilimForAll",
+    "leilui": {
+      "writtenFor": "Este sitio fue creado",
+      "phonetic": "Leilouï Nichmat",
+      "blessing": "ז״ל — Que su memoria sea una bendición"
+    },
+    "section1": {
+      "title": "¿Qué es TehilimForAll?",
+      "p1": "TehilimForAll es una plataforma gratuita para leer Tehilim en su teléfono. Los 150 salmos están disponibles en hebreo con nikud (signos vocálicos), transliteración fonética sefardí y traducción al inglés (JPS). Sin anuncios, sin cuenta requerida.",
+      "p2": "Las funciones incluyen marcadores, listas de lectura personalizadas y la Lectura Colectiva — donde un grupo divide los 150 salmos entre sus miembros. Cada persona reclama su porción y la lee, mientras una barra de progreso compartida sigue el avance del grupo en tiempo real.",
+      "p3": "Diseñado para todos: desde lectores fluidos de hebreo hasta quienes dependen de la fonética. Ya sea que conozca cada palabra de memoria o esté encontrando los salmos por primera vez, TehilimForAll le encuentra donde usted está.",
+      "features": ["Hebreo con nikud", "Transliteración fonética", "Inglés (JPS)", "Marcadores", "Listas personalizadas", "Lectura Colectiva", "Gratis, sin cuenta"]
+    },
+    "section2": {
+      "title": "¿Qué es Tehilim?",
+      "p1": "Tehilim — el Libro de los Salmos — es uno de los libros más queridos de la Biblia hebrea. Pertenece a los Ketuvim, los Escritos, la tercera sección del Tanaj. A diferencia de la Torá, que manda, o los Profetas, que reprenden y consuelan, Tehilim habla en una dirección diferente: es la voz humana dirigiéndose a Dios. Es la oración en su forma más pura.",
+      "p2": "La tradición atribuye los salmos al rey David, el rey-poeta-pastor que era, en palabras del Talmud, «agradable en canciones e himnos». Sin embargo, el libro mismo es más inclusivo. Sus superscripciones nombran a otros autores — los hijos de Coré, Asaf, Moisés, Salomón — y muchos salmos no llevan ninguna atribución. David puede ser el gran arquitecto del libro, pero Tehilim pertenece a todo el pueblo.",
+      "p3": "Ciento cincuenta salmos, abarcando toda la gama de la experiencia humana: alabanza radiante y petición angustiada, gratitud y duelo, anhelo, arrepentimiento, asombro, desesperación y esperanza inquebrantable. Tehilim no presenta una versión ordenada de la vida espiritual. La presenta honestamente — lo que es precisamente por qué ha perdurado.",
+      "p4": "En la vida judía, Tehilim nunca está lejos. Se recitan porciones diariamente en el servicio matutino; todo el libro es completado cada mes por comunidades que lo toman a su cargo. Los salmos se dicen junto a la cama de los enfermos, para los soldados en el campo, para los difuntos, antes del Shabat, y en momentos de crisis comunitaria cuando las propias palabras se sienten insuficientes. El poder de Tehilim es precisamente este: cada persona en cada generación encuentra su propia situación reflejada en sus versos. El salmo que David escribió escondiéndose de sus enemigos se convierte, siglos después, en la oración de alguien sentado en una sala de espera de hospital. Las palabras son antiguas; la experiencia es inmediata."
+    }
   }
 }

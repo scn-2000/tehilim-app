@@ -30,6 +30,7 @@
   },
   "sidebar": {
     "title": "TehilimForAll",
+    "aboutLink": "À propos",
     "bookmarksTab": "Favoris",
     "listsTab": "Listes",
     "collectiveTab": "Collectif",
@@ -73,11 +74,42 @@
     "beforeReading": "Avant la lecture",
     "beforeReadingNote": "Avant de lire, beaucoup commencent par une déclaration d'intention (L'shem yichud). Pour lire au nom de quelqu'un d'autre, mentionnez son nom hébreu : [Prénom] ben/bat [nom de la mère]. Concluez par une prière personnelle en vos propres mots.",
     "readNow": "Lire maintenant",
+    "readArrow": "Lire →",
     "category": "Catégorie",
     "prevInCategory": "← Préc. dans catégorie",
     "nextInCategory": "Suiv. dans catégorie →",
     "prevInList": "← Préc. dans liste",
     "nextInList": "Suiv. dans liste →",
-    "dayNames": ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
+    "dayNames": ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+    "shabbatNote": "Ces psaumes sont traditionnellement récités le Chabbat. Les liens vers les psaumes individuels ne sont pas fournis ici — l'utilisation d'un téléphone ou d'un appareil numérique pendant Chabbat n'est pas appropriée. Veuillez lire depuis un sidour ou un texte imprimé.",
+    "highHolidaysNote": "Ces psaumes sont traditionnellement récités pendant la période des Grandes Fêtes. Les liens vers les psaumes individuels ne sont pas fournis ici — l'utilisation d'un téléphone ou d'un appareil numérique le Yom Tov n'est pas appropriée. Veuillez lire depuis un mahzor ou un sidour.",
+    "psalmsHeading": "Psaumes",
+    "dailyTehilimTodayPrefix": "Aujourd'hui c'est le jour",
+    "dailyTehilimTodaySuffix": "du mois — votre portion est mise en évidence ci-dessous.",
+    "dailyTehilimTodayLabel": "Aujourd'hui",
+    "dailyTehilimDay": "Jour {day} — Psaumes {range}"
+  },
+  "about": {
+    "eyebrow": "À propos",
+    "title": "À propos de TehilimForAll",
+    "leilui": {
+      "writtenFor": "Ce site a été créé",
+      "phonetic": "Leilouï Nichmat",
+      "blessing": "ז״ל — Que leur mémoire soit une bénédiction"
+    },
+    "section1": {
+      "title": "Qu'est-ce que TehilimForAll ?",
+      "p1": "TehilimForAll est une plateforme gratuite pour lire les Tehilim sur votre téléphone. Les 150 psaumes sont disponibles en hébreu avec nikoud (signes vocaliques), translittération phonétique sépharade et traduction anglaise (JPS). Pas de publicités, pas de compte requis.",
+      "p2": "Les fonctionnalités incluent les favoris, les listes de lecture personnalisées et la Lecture Collective — où un groupe répartit les 150 psaumes entre ses membres. Chacun revendique sa portion et la lit, tandis qu'une barre de progression partagée suit l'avancement du groupe en temps réel.",
+      "p3": "Conçu pour tous : des lecteurs hébreux courants à ceux qui s'appuient sur la phonétique. Que vous connaissiez chaque mot par cœur ou que vous découvriez les psaumes pour la première fois, TehilimForAll vous rencontre là où vous êtes.",
+      "features": ["Hébreu avec nikoud", "Translittération phonétique", "Anglais (JPS)", "Favoris", "Listes personnalisées", "Lecture Collective", "Gratuit, sans compte"]
+    },
+    "section2": {
+      "title": "Qu'est-ce que Tehilim ?",
+      "p1": "Tehilim — le Livre des Psaumes — est l'un des livres les plus aimés de la Bible hébraïque. Il appartient aux Ketouvim, les Écrits, la troisième section du Tanakh. Contrairement à la Torah qui commande, ou aux Prophètes qui réprimandent et consolent, Tehilim parle dans une direction différente : c'est la voix humaine s'adressant à Dieu. C'est la prière dans sa forme la plus pure.",
+      "p2": "La tradition attribue les psaumes au roi David, le roi-poète-berger qui était, selon les mots du Talmud, « agréable en chants et hymnes ». Pourtant, le livre lui-même est plus inclusif. Ses superscriptions nomment d'autres auteurs — les fils de Coré, Asaph, Moïse, Salomon — et beaucoup de psaumes ne portent aucune attribution. David est peut-être le grand architecte du livre, mais Tehilim appartient à tout le peuple.",
+      "p3": "Cent cinquante psaumes, couvrant toute la gamme de l'expérience humaine : louange radieuse et pétition angoissée, gratitude et deuil, désir, repentir, émerveillement, désespoir et espoir inébranlable. Tehilim ne présente pas une version ordonnée de la vie spirituelle. Il la présente honnêtement — ce qui est précisément la raison pour laquelle il a perduré.",
+      "p4": "Dans la vie juive, Tehilim n'est jamais loin. Des portions sont récitées quotidiennement lors de l'office du matin ; le livre entier est complété chaque mois par des communautés qui s'en chargent. Les psaumes sont récités au chevet des malades, pour les soldats sur le terrain, pour les défunts, avant Chabbat, et dans les moments de crise communautaire lorsque ses propres mots semblent insuffisants. La puissance de Tehilim est précisément cela : chaque personne de chaque génération trouve sa propre situation reflétée dans ses versets. Le psaume que David a écrit en se cachant de ses ennemis devient, des siècles plus tard, la prière de quelqu'un assis dans une salle d'attente d'hôpital. Les mots sont anciens ; l'expérience est immédiate."
+    }
   }
 }
