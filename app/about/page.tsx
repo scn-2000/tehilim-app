@@ -6,14 +6,14 @@ import { useTranslations } from '../lib/i18n';
 const LEILUI_NAMES = [
   'Venus Nedjma bat Esther z\'l',
   'Chmouel ben Zara Tekouka z\'l',
-  'Lazare ben Zara Tekouka',
+  'Lazare ben Zara Tekouka z\'l',
   'Lory-Marine Goumara Levana z\'l bat Yvonne Haya',
   'Jean-Marc Mordehaï z\'l ben Alain David',
   'Maxime Nessim ben Messaouda z\'l',
   'Danielle Hanna bat Messaouda z\'l',
   'Hayal Liav z\'l Ben Orith Ryvka',
   'Hayal Omri z\'l Ben Iris',
-  'Harel z\'l ben Solange',
+  'Harel z\'l ben Shoshana',
 ];
 
 export default function AboutPage() {
@@ -50,9 +50,9 @@ export default function AboutPage() {
           <p style={{ fontSize: '13px', color: textMuted, marginBottom: '20px', fontStyle: 'italic' }}>
             {t.about.leilui.phonetic}
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {LEILUI_NAMES.map((name) => (
-              <p key={name} style={{ fontSize: '14px', color: textMuted, lineHeight: 1.6, maxWidth: '420px', margin: 0 }}>
+              <p key={name} style={{ fontSize: '14px', color: textMuted, lineHeight: 1.6, maxWidth: '420px', margin: 0, textAlign: 'left' }}>
                 {name}
               </p>
             ))}
