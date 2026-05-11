@@ -8,6 +8,7 @@ interface Props {
   textPrimary?: string;
   textMuted?: string;
   surface?: string;
+  compact?: boolean;
 }
 
 export default function LanguageSelector({
@@ -15,6 +16,7 @@ export default function LanguageSelector({
   textPrimary = '#2c1810',
   textMuted = '#7c6248',
   surface = '#fff8ee',
+  compact = false,
 }: Props) {
   const { locale, setLocale } = useTranslations();
   const [open, setOpen] = useState(false);
@@ -35,7 +37,7 @@ export default function LanguageSelector({
         onClick={() => setOpen(o => !o)}
         style={{
           background: 'none', border: `1px solid ${border}`, borderRadius: '8px',
-          padding: '6px 10px', cursor: 'pointer', fontSize: '12px', fontWeight: '600',
+          padding: compact ? '4px 6px' : '6px 10px', cursor: 'pointer', fontSize: '12px', fontWeight: '600',
           color: textMuted, fontFamily: 'inherit', letterSpacing: '0.06em',
         }}
       >

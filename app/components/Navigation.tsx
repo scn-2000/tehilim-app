@@ -16,6 +16,13 @@ const IconSettings = () => (
   </svg>
 );
 
+const IconUser = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
 function getActiveTab(pathname: string): string | null {
   if (pathname === '/' || pathname.startsWith('/psalm')) return 'psalms';
   if (pathname.startsWith('/bookmarks')) return 'bookmarks';
@@ -33,7 +40,10 @@ export default function Navigation() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
+  const [windowWidth, setWindowWidth] = useState(0);
+  const [dropdownShift, setDropdownShift] = useState(0);
 
+  const isMobile = windowWidth > 0 && windowWidth < 640;
   const showTabs = pathname !== '/auth';
   const activeTab = getActiveTab(pathname);
 
@@ -54,6 +64,13 @@ export default function Navigation() {
   ];
 
   useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
+  useEffect(() => {
     getUser().then(u => setUser(u as { id: string; email?: string } | null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
@@ -71,6 +88,17 @@ export default function Navigation() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  // Shift dropdown right if it would overflow the left viewport edge
+  useEffect(() => {
+    if (!settingsOpen || !settingsRef.current) {
+      setDropdownShift(0);
+      return;
+    }
+    const rect = settingsRef.current.getBoundingClientRect();
+    const leftEdge = rect.right - 220;
+    setDropdownShift(leftEdge < 8 ? 8 - leftEdge : 0);
+  }, [settingsOpen]);
+
   const toggleStyle = (active: boolean) => ({
     width: '42px', height: '24px', borderRadius: '12px',
     background: active ? goldAccent : (darkMode ? '#4a3520' : '#ddd'),
@@ -80,6 +108,16 @@ export default function Navigation() {
     transition: 'background 0.2s', flexShrink: 0,
   });
   const knob = { width: '18px', height: '18px', borderRadius: '50%', background: 'white' };
+
+  const authBtnStyle: React.CSSProperties = {
+    background: 'none', border: `1px solid ${border}`, borderRadius: '8px',
+    height: '36px',
+    width: isMobile ? '36px' : 'auto',
+    padding: isMobile ? '0' : '0 12px',
+    cursor: 'pointer',
+    fontSize: '13px', color: textMuted, fontFamily: 'inherit', whiteSpace: 'nowrap',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  };
 
   return (
     <div style={{ position: 'sticky', top: 0, zIndex: 200, fontFamily: "var(--font-lora), Georgia, serif" }}>
@@ -122,7 +160,9 @@ export default function Navigation() {
                 position: 'absolute', top: '44px', right: 0,
                 background: surface, border: `1px solid ${border}`,
                 borderRadius: '12px', padding: '16px', width: '220px',
+                maxWidth: '280px',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.15)', zIndex: 300,
+                transform: dropdownShift > 0 ? `translateX(${dropdownShift}px)` : undefined,
               }}>
                 <p style={{ fontSize: '11px', fontWeight: '600', color: textMuted, marginBottom: '12px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   {t.settings.title}
@@ -164,36 +204,48 @@ export default function Navigation() {
                     ))}
                   </div>
                 </div>
+
+                {/* About link — only shown on mobile where header About link is hidden */}
+                {isMobile && (
+                  <div style={{ borderTop: `1px solid ${border}`, paddingTop: '12px', marginTop: '12px' }}>
+                    <button
+                      onClick={() => { router.push('/about'); setSettingsOpen(false); }}
+                      style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        width: '100%', padding: '2px 0', fontSize: '13px', color: textMuted,
+                        fontFamily: 'inherit',
+                      }}>
+                      <span>{t.about.title}</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          {/* Auth button — hidden on /auth page */}
+          {/* Auth button — icon-only on mobile */}
           {pathname !== '/auth' && (
             user ? (
               <button
                 onClick={async () => { await signOut(); setUser(null); }}
-                style={{
-                  background: 'none', border: `1px solid ${border}`, borderRadius: '8px',
-                  padding: '0 12px', height: '36px', cursor: 'pointer',
-                  fontSize: '13px', color: textMuted, fontFamily: 'inherit', whiteSpace: 'nowrap',
-                }}>
-                {t.sidebar.signOut}
+                aria-label={isMobile ? t.sidebar.signOut : undefined}
+                style={authBtnStyle}>
+                {isMobile ? <IconUser /> : t.sidebar.signOut}
               </button>
             ) : (
               <button
                 onClick={() => router.push('/auth')}
-                style={{
-                  background: 'none', border: `1px solid ${border}`, borderRadius: '8px',
-                  padding: '0 12px', height: '36px', cursor: 'pointer',
-                  fontSize: '13px', color: textMuted, fontFamily: 'inherit', whiteSpace: 'nowrap',
-                }}>
-                Sign in
+                aria-label={isMobile ? 'Sign in' : undefined}
+                style={authBtnStyle}>
+                {isMobile ? <IconUser /> : 'Sign in'}
               </button>
             )
           )}
 
-          {pathname !== '/auth' && (
+          {/* About link — hidden on mobile (accessible via Settings dropdown) */}
+          {pathname !== '/auth' && !isMobile && (
             <button
               onClick={() => router.push('/about')}
               style={{
@@ -206,20 +258,28 @@ export default function Navigation() {
             </button>
           )}
 
-          <LanguageSelector border={border} surface={surface} textPrimary={textPrimary} textMuted={textMuted} />
+          <LanguageSelector
+            border={border}
+            surface={surface}
+            textPrimary={textPrimary}
+            textMuted={textMuted}
+            compact={isMobile}
+          />
         </div>
       </div>
 
       {/* Nav tabs row */}
       {showTabs && (
-        <div style={{
-          background: tabsBg,
-          borderBottom: `1px solid ${border}`,
-          display: 'flex',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        } as React.CSSProperties}>
+        <div
+          className="nav-tabs"
+          style={{
+            background: tabsBg,
+            borderBottom: `1px solid ${border}`,
+            display: 'flex',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          } as React.CSSProperties}>
           {TABS.map(({ key, label, href }) => (
             <button
               key={key}
