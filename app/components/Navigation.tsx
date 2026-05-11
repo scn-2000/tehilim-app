@@ -29,6 +29,7 @@ function getActiveTab(pathname: string): string | null {
   if (pathname.startsWith('/lists') || pathname.startsWith('/list/')) return 'lists';
   if (pathname.startsWith('/collective')) return 'collective';
   if (pathname.startsWith('/categories') || pathname.startsWith('/category')) return 'categories';
+  if (pathname.startsWith('/blog')) return 'blog';
   return null;
 }
 
@@ -61,6 +62,7 @@ export default function Navigation() {
     { key: 'lists',      label: t.sidebar.listsTab,        href: '/lists' },
     { key: 'collective', label: t.sidebar.collectiveTab,   href: '/collective' },
     { key: 'categories', label: t.categories.tab,          href: '/categories' },
+    { key: 'blog',       label: 'Blog',                    href: '/blog' },
   ];
 
   useEffect(() => {

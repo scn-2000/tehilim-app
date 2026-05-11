@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { categories } from './lib/categories';
+import { ARTICLES } from './blog/content/index';
 
 const BASE_URL = 'https://tehilimforall.com';
 
@@ -30,5 +31,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...psalmPages, ...categoryPages];
+  const blogPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.8 },
+    ...ARTICLES.map(a => ({
+      url: `${BASE_URL}/blog/${a.slug}`,
+      lastModified: new Date(a.date),
+      changeFrequency: 'monthly' as const,
+      priority: 0.75,
+    })),
+  ];
+
+  return [...staticPages, ...psalmPages, ...categoryPages, ...blogPages];
 }
