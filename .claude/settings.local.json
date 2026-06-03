@@ -22,7 +22,10 @@
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(npm run *)",
       "Bash(Remove-Item *)",
-      "Bash(npx vercel *)"
+      "Bash(npx vercel *)",
+      "Bash(powershell *)",
+      "Bash(node_modules\\\\.bin\\\\tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)"
     ]
   }
 }
